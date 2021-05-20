@@ -173,7 +173,26 @@ class RosExtractor():
                     if name!="?" or msg_type!="?":
                       RosModel.addSubscriber(name, msg_type.replace("/",".").replace(".msg",""))
                       roscomponent.add_interface(name,"subs", pkg_name+"."+art_name+"."+node_name+"."+name)
-
+            for call in (CodeQuery(gs).all_calls.get()):
+                if "Service" in str(call):
+                  #print(call)
+                  if len(call.arguments) > 1:
+                    name = analysis._extract_topic(call, topic_pos=0)
+                    srv_type = analysis._extract_message_type(call)
+                    queue_size = analysis._extract_queue_size(call, queue_pos=1)
+                    if name!="?" or srv_type!="?":
+                      RosModel.addServiceServer(name, srv_type.replace("/",".").replace(".srv",""))
+                  roscomponent.add_interface(name,"srvsrvs", pkg_name+"."+art_name+"."+node_name+"."+name)
+            for call in (CodeQuery(gs).all_calls.get()):
+                if "Client" in str(call):
+                  #print(call)
+                  if len(call.arguments) > 1:
+                    name = analysis._extract_topic(call, topic_pos=0)
+                    srv_type = analysis._extract_message_type(call)
+                    queue_size = analysis._extract_queue_size(call, queue_pos=1)
+                    if name!="?" or srv_type!="?":
+                      RosModel.addServiceClient(name, srv_type.replace("/",".").replace(".srv",""))
+                      roscomponent.add_interface(name,"srvcls", pkg_name+"."+art_name+"."+node_name+"."+name)
         if node.language == "py":
             msgs_list=[]
             for i in parser.imported_names_list:
