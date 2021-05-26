@@ -20,5 +20,8 @@ For example:
 [sudo] docker run -it haros_foxy:latest /haros_runner.sh sick_safetyscanners2 sick_safetyscanners2_node node . /root/ws  https://github.com/SICKAG/sick_safetyscanners2
 
 [sudo] docker run -it haros_foxy:latest /haros_runner.sh turtlesim turtlesim_node node . /root/ws https://github.com/ros/ros_tutorials foxy-devel
+
+[sudo] docker run -it haros_foxy:latest /haros_runner.sh test_ros2 test_ros2 node . /root/ws https://github.com/ipa-nhg/test_ros2_code_extractor
+
 ```
 

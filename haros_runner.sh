@@ -72,11 +72,11 @@ then
   if [ $PYTHON_VERSION == "2" ]
   then
     python /ros_model_extractor.py --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}">> extractor.log
-    cat extractor.log
+    #cat extractor.log
   elif [ $PYTHON_VERSION == "3" ]
   then
     python3 /ros_model_extractor.py --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code">> extractor.log
-    cat extractor.log 
+    #cat extractor.log 
   else
     echo "Python version not supported"
     exit
@@ -85,11 +85,20 @@ else
   echo "Python setup not found"
 fi
 
-echo "###########"
-echo "~~~~~~~~~~~"
-echo "Print of the model: $2.ros:"
-echo "~~~~~~~~~~~"
-cat "${4}"/"$2".ros
-echo ""
-echo "~~~~~~~~~~~"
-echo "###########"
+
+
+if [ ! -f "${4}"/"$2".ros ]; then
+  echo "~~~~~~~~~~~"
+  echo "The model couldn't be generated, the analisys failed. See the following report:"
+  cat extractor.log
+  echo "~~~~~~~~~~~"
+else
+  echo "###########"
+  echo "~~~~~~~~~~~"
+  echo "Print of the model: $2.ros:"
+  echo "~~~~~~~~~~~"
+  cat "${4}"/"$2".ros
+  echo ""
+  echo "~~~~~~~~~~~"
+  echo "###########"
+fi

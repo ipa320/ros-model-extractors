@@ -20,6 +20,8 @@ import os
 import argparse
 import subprocess
 from ros_model_generator.rosmodel_generator import RosModelGenerator
+import ros_metamodels.ros_metamodel_core as RosModelMetamodel
+
 import rospkg
 #import ament_index_python 
 from haros.extractor import NodeExtractor, RoscppExtractor, RospyExtractor
@@ -69,6 +71,7 @@ class RosExtractor():
     if os.path.isfile(os.path.join(self.pkg.path, "CMakeLists.txt")):
         parser.parse(os.path.join(self.pkg.path, "CMakeLists.txt"))
         for target in parser.executables.values():
+            print("INFO: Found artifact: "+target.output_name)
             if target.output_name == node_name:
                 for file_in in target.files:
                     full_path = file_in
@@ -86,20 +89,18 @@ class RosExtractor():
         for sf in node.source_files:
             try:
                 if parser.parse(sf.path) is not None:
-                    # ROS MODEL EXTRACT PRIMITIVES
+                    # ROS MODEL EXTRACT PRIMITIVES 
                     if node.language == "py":
                         node_name=node_name.replace(".py","")
-                    RosModel = RosModelGenerator()
-                    RosModel.setPackageName(self.pkg.name)
-                    RosModel.setArtifactName(name)
-                    RosModel.setNodeName(node_name)
-                    roscomponent = ros_component(name, ns)
+                    RosModel_node=RosModelMetamodel.Node(node_name)
                     try:
-                        self.extract_primitives(node, parser, analysis, RosModel, roscomponent, pkg_name, node_name, name)
+                        self.extract_primitives(node, parser, analysis, RosModel_node, roscomponent, pkg_name, node_name, name)
                         # SAVE ROS MODEL
-                        model_str = RosModel.dump_ros_model(self.args.model_path+"/"+name+".ros")
-                    except:
-                        pass
+                        ros_model = RosModelGenerator()
+                        ros_model.create_model_from_node(self.pkg.name,name, RosModel_node)
+                        model_str = ros_model.generate_ros_model(self.args.model_path+"/"+name+".ros")
+                    except error:
+                        print("The interfaces can't be extracted "+error)
                 else:
                   print("The model couldn't be extracted")
             except:
@@ -109,90 +110,51 @@ class RosExtractor():
     if self.args.output:
         print(model_str)
 
-  def extract_primitives(self, node, parser, analysis, RosModel, roscomponent, pkg_name, node_name, art_name):
-        gs = parser.global_scope
-        node.source_tree = parser.global_scope
+  def extract_primitives(self, node, parser, analysis, RosModel_node, roscomponent, pkg_name, node_name, art_name):
+    gs = parser.global_scope
+    node.source_tree = parser.global_scope
+    if os.environ.get("ROS_VERSION") == "1":
         if node.language == "cpp":
             #print(CodeQuery(gs).all_calls.get())
             for call in (CodeQuery(gs).all_calls.where_name("SimpleActionServer").get()):
                 if len(call.arguments) > 0:
                   name = analysis._extract_action(call)
                   action_type = analysis._extract_action_type(call).split("_<",1)[0]
-                  RosModel.addActionServer.append(name,action_type.replace("/","."))
-                  roscomponent.add_interface(name,"actsrvs", pkg_name+"."+art_name+"."+node_name+"."+name)
+                  RosModel_node.add_action_server(name,action_type.replace("/","."))
+                  #roscomponent.add_interface(name,"actsrvs", pkg_name+"."+art_name+"."+node_name+"."+name)
             for call in (CodeQuery(gs).all_calls.where_name("SimpleActionClient").get()):
                 if len(call.arguments) > 0:
                   name = analysis._extract_action(call)
                   action_type = analysis._extract_action_type(call).split("_<",1)[0]
-                  RosModel.addActionClient.append(name,action_type.replace("/","."))
-                  roscomponent.add_interface(name,"actcls", str(pkg_name)+"."+str(art_name)+"."+str(node_name)+"."+str(name))
+                  RosModel_node.add_action_client.append(name,action_type.replace("/","."))
+                  #roscomponent.add_interface(name,"actcls", str(pkg_name)+"."+str(art_name)+"."+str(node_name)+"."+str(name))
             for call in (CodeQuery(gs).all_calls.where_name("advertise").where_result("ros::Publisher").get()):
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
                   msg_type = analysis._extract_message_type(call)
                   queue_size = analysis._extract_queue_size(call, queue_pos=1)
-                  RosModel.addPublisher(name, msg_type.replace("/","."))
-                  roscomponent.add_interface(name,"pubs", pkg_name+"."+art_name+"."+node_name+"."+name)
+                  RosModel_node.add_publisher(name, msg_type.replace("/","."))
+                  #roscomponent.add_interface(name,"pubs", pkg_name+"."+art_name+"."+node_name+"."+name)
             for call in (CodeQuery(gs).all_calls.where_name("subscribe").where_result("ros::Subscriber").get()):
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
                   msg_type = analysis._extract_message_type(call)
                   queue_size = analysis._extract_queue_size(call, queue_pos=1)
-                  RosModel.addSubscriber(name, msg_type.replace("/","."))
-                  roscomponent.add_interface(name,"subs", pkg_name+"."+art_name+"."+node_name+"."+name)
+                  RosModel_node.add_subscriber(name, msg_type.replace("/","."))
+                  #roscomponent.add_interface(name,"subs", pkg_name+"."+art_name+"."+node_name+"."+name)
             for call in (CodeQuery(gs).all_calls.where_name("advertiseService").where_result("ros::ServiceServer").get()):
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call)
                   srv_type = analysis._extract_message_type(call)
-                  RosModel.addServiceServer(name, srv_type.replace("/",".").replace("Request",""))
-                  roscomponent.add_interface(name,"srvsrvs", pkg_name+"."+art_name+"."+node_name+"."+name)
+                  RosModel_node.add_service_server(name, srv_type.replace("/",".").replace("Request",""))
+                  #roscomponent.add_interface(name,"srvsrvs", pkg_name+"."+art_name+"."+node_name+"."+name)
             for call in (CodeQuery(gs).all_calls.where_name("serviceClient").where_result("ros::ServiceClient").get()):
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call)
                   srv_type = analysis._extract_message_type(call)
-                  RosModel.addServiceClient(name, srv_type.replace("/",".").replace("Response",""))
-                  roscomponent.add_interface(name,"srvcls", pkg_name+"."+art_name+"."+node_name+"."+name)
-            #ROS2
-            for call in (CodeQuery(gs).all_calls.get()):
-                if "Publisher" in str(call):
-                  #print(call)
-                  if len(call.arguments) > 1:
-                    name = analysis._extract_topic(call, topic_pos=0)
-                    msg_type = analysis._extract_message_type(call)
-                    queue_size = analysis._extract_queue_size(call, queue_pos=1)
-                    if name!="?" or msg_type!="?":
-                      RosModel.addPublisher(name, msg_type.replace("/",".").replace(".msg",""))
-                      roscomponent.add_interface(name,"pubs", pkg_name+"."+art_name+"."+node_name+"."+name)
-            for call in (CodeQuery(gs).all_calls.get()):
-                if "Subscription" in str(call):
-                  #print(call)
-                  if len(call.arguments) > 1:
-                    name = analysis._extract_topic(call, topic_pos=0)
-                    msg_type = analysis._extract_message_type(call)
-                    queue_size = analysis._extract_queue_size(call, queue_pos=1)
-                    if name!="?" or msg_type!="?":
-                      RosModel.addSubscriber(name, msg_type.replace("/",".").replace(".msg",""))
-                      roscomponent.add_interface(name,"subs", pkg_name+"."+art_name+"."+node_name+"."+name)
-            for call in (CodeQuery(gs).all_calls.get()):
-                if "Service" in str(call):
-                  #print(call)
-                  if len(call.arguments) > 1:
-                    name = analysis._extract_topic(call, topic_pos=0)
-                    srv_type = analysis._extract_message_type(call)
-                    queue_size = analysis._extract_queue_size(call, queue_pos=1)
-                    if name!="?" or srv_type!="?":
-                      RosModel.addServiceServer(name, srv_type.replace("/",".").replace(".srv",""))
-                  roscomponent.add_interface(name,"srvsrvs", pkg_name+"."+art_name+"."+node_name+"."+name)
-            for call in (CodeQuery(gs).all_calls.get()):
-                if "Client" in str(call):
-                  #print(call)
-                  if len(call.arguments) > 1:
-                    name = analysis._extract_topic(call, topic_pos=0)
-                    srv_type = analysis._extract_message_type(call)
-                    queue_size = analysis._extract_queue_size(call, queue_pos=1)
-                    if name!="?" or srv_type!="?":
-                      RosModel.addServiceClient(name, srv_type.replace("/",".").replace(".srv",""))
-                      roscomponent.add_interface(name,"srvcls", pkg_name+"."+art_name+"."+node_name+"."+name)
+                  RosModel_node.add_service_client(name, srv_type.replace("/",".").replace("Response",""))
+                  #roscomponent.add_interface(name,"srvcls", pkg_name+"."+art_name+"."+node_name+"."+name)
+
         if node.language == "py":
             msgs_list=[]
             for i in parser.imported_names_list:
@@ -203,27 +165,66 @@ class RosExtractor():
                   ns, name = analysis._extract_topic(call)
                   msg_type = analysis._extract_message_type(call, 'data_class', msgs_list)
                   queue_size = analysis._extract_queue_size(call )
-                  RosModel.addPublisher(name, msg_type.replace("/","."))
+                  RosModel_node.add_publisher(name, msg_type.replace("/","."))
                   roscomponent.add_interface(name,"pubs", pkg_name+"."+art_name+"."+node_name+"."+name)
             for call in (CodeQuery(gs).all_calls.where_name(('Subscriber', 'rospy.Subscriber'))).get():
                 if len(call.arguments) > 1:
                   ns, name = analysis._extract_topic(call)
                   msg_type = analysis._extract_message_type(call, 'data_class', msgs_list)
                   queue_size = analysis._extract_queue_size(call )
-                  RosModel.addSubscriber(name, msg_type.replace("/","."))
+                  RosModel_node.add_subscriber(name, msg_type.replace("/","."))
                   roscomponent.add_interface(name,"subs", pkg_name+"."+art_name+"."+node_name+"."+name)
             for call in (CodeQuery(gs).all_calls.where_name(analysis.all_rospy_names('service-def'))).get():
                 if len(call.arguments) > 1:
                   ns, name = analysis._extract_topic(call)
                   srv_type = analysis._extract_message_type(call, 'service_class', msgs_list)
-                  RosModel.addServiceServer(name, srv_type.replace("/",".").replace("Request",""))
+                  RosModel_node.add_service_server(name, srv_type.replace("/",".").replace("Request",""))
                   roscomponent.add_interface(name,"srvsrvs", pkg_name+"."+art_name+"."+node_name+"."+name)
             for call in (CodeQuery(gs).all_calls.where_name(analysis.all_rospy_names('service-call'))).get():
                 if len(call.arguments) > 1:
                   ns, name = analysis._extract_topic(call)
                   srv_type = analysis._extract_message_type(call, 'service_class', msgs_list)
-                  RosModel.addServiceClient(name, srv_type.replace("/",".").replace("Response",""))
+                  RosModel_node.add_service_client(name, srv_type.replace("/",".").replace("Response",""))
                   roscomponent.add_interface(name,"srvcls", pkg_name+"."+art_name+"."+node_name+"."+name)
+    if os.environ.get("ROS_VERSION") == "2":
+        #ROS2
+        if node.language == "cpp":
+          for call in (CodeQuery(gs).all_calls.get()):
+              if "Publisher" in str(call):
+                #print(call)
+                if len(call.arguments) > 1:
+                  name = analysis._extract_topic(call, topic_pos=0)
+                  msg_type = analysis._extract_message_type(call)
+                  queue_size = analysis._extract_queue_size(call, queue_pos=1)
+                  if name!="?" or msg_type!="?":
+                    RosModel_node.add_publisher(name, msg_type.replace("/",".").replace(".msg",""))
+          for call in (CodeQuery(gs).all_calls.get()):
+              if "Subscription" in str(call):
+                #print(call)
+                if len(call.arguments) > 1:
+                  name = analysis._extract_topic(call, topic_pos=0)
+                  msg_type = analysis._extract_message_type(call)
+                  queue_size = analysis._extract_queue_size(call, queue_pos=1)
+                  if name!="?" or msg_type!="?":
+                    RosModel_node.add_subscriber(name, msg_type.replace("/",".").replace(".msg",""))
+          for call in (CodeQuery(gs).all_calls.get()):
+              if "Service" in str(call):
+                #print(call)
+                if len(call.arguments) > 1:
+                  name = analysis._extract_topic(call, topic_pos=0)
+                  srv_type = analysis._extract_message_type(call)
+                  queue_size = analysis._extract_queue_size(call, queue_pos=1)
+                  if name!="?" or srv_type!="?":
+                    RosModel_node.add_service_server(name, srv_type.replace("/",".").replace(".srv",""))
+          for call in (CodeQuery(gs).all_calls.get()):
+              if "Client" in str(call):
+                #print(call)
+                if len(call.arguments) > 1:
+                  name = analysis._extract_topic(call, topic_pos=0)
+                  srv_type = analysis._extract_message_type(call)
+                  queue_size = analysis._extract_queue_size(call, queue_pos=1)
+                  if name!="?" or srv_type!="?":
+                    RosModel_node.add_service_client(name, srv_type.replace("/",".").replace(".srv",""))
 
   def parse_arg(self):
     parser = argparse.ArgumentParser()
