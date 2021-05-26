@@ -1,6 +1,12 @@
 # ros-model-extractors
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
+[![MELODIC build status](https://github.com/ipa320/ros-model-extractors/actions/workflows/build_melodic.yml/badge.svg)](https://github.com/ipa320/ros-model-extractors/actions/workflows/build_melodic.yml)
+[![NOETIC ros-model-extractors](https://github.com/ipa320/ros-model-extractors/actions/workflows/build_noetic.yml/badge.svg)](https://github.com/ipa320/ros-model-extractors/actions/workflows/build_noetic.yml)
+[![FOXY build status](https://github.com/ipa320/ros-model-extractors/actions/workflows/build_foxy.yml/badge.svg)](https://github.com/ipa320/ros-model-extractors/actions/workflows/build_foxy.yml)
+
+
 Technical Maintainer: [**ipa-nhg**](https://github.com/ipa-nhg/) (**Nadia Hammoudeh Garcia**, **Fraunhofer IPA**) - **nadia.hammoudeh.garcia@ipa.fraunhofer.de**
 
 This repository contains the HAROS framework plugin to automatically generate models according to the DSLs defined for RosModel.

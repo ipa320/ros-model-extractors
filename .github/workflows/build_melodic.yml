@@ -1,0 +1,21 @@
+name: MELODIC ros-model-extractors
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        path: ros-model-extractors
+    - name: Build the docker container for melodic
+      run: |
+        pushd ros-model-extractors
+        docker build --tag=haros_melodic -f melodic/Dockerfile .
+    - name: Analyse the ROS package hokuyo_node for melodic
+      run: |
+        pushd ros-model-extractors
+        docker run haros_melodic:latest /test.sh hokuyo_node melodic
