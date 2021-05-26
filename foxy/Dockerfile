@@ -46,6 +46,7 @@ ENV PYTHON_VERSION 3
 
 COPY haros_runner.sh /
 COPY ros_model_extractor.py /
+COPY test.sh /
 
 EXPOSE 4000
 
