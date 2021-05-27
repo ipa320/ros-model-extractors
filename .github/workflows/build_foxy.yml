@@ -15,8 +15,8 @@ jobs:
       run: |
         pushd ros-model-extractors
         docker build --tag=haros_foxy -f foxy/Dockerfile .
-    - name: Analyse the ROS package sick_safetyscanners2 for foxy
+    - name: Analyse the ROS package test package for foxy
       run: |
         pushd ros-model-extractors
-        docker run haros_foxy:latest /test.sh foxy
+        docker run haros_foxy:latest /test.sh ros2
 

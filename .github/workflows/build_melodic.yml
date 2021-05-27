@@ -15,7 +15,7 @@ jobs:
       run: |
         pushd ros-model-extractors
         docker build --tag=haros_melodic -f melodic/Dockerfile .
-    - name: Analyse the ROS package hokuyo_node for melodic
+    - name: Analyse the test ROS package for melodic
       run: |
         pushd ros-model-extractors
-        docker run haros_melodic:latest /test.sh hokuyo_node melodic
+        docker run haros_melodic:latest /test.sh ros1

@@ -15,7 +15,7 @@ jobs:
       run: |
         pushd ros-model-extractors
         docker build --tag=haros_noetic -f noetic/Dockerfile .
-    - name: Analyse the ROS package cob_sick_s300 for noetic
+    - name: Analyse the test ROS package for noetic
       run: |
         pushd ros-model-extractors
-        docker run haros_noetic:latest /test.sh noetic
+        docker run haros_noetic:latest /test.sh ros1
