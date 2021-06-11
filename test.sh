@@ -20,7 +20,7 @@ test_model="PackageSet {
           Subscriber { name 'power_state' message 'sensor_msgs.BatteryState'}}}
 }}}"
 
-./haros_runner.sh test_pkg test_node node . /root/ws https://github.com/ipa-nhg/test_ros_code_extractor "${1}"
+./haros_runner.sh test_pkg test_node node . /root/ws "https://github.com/ipa-nhg/test_ros_code_extractor -b ${1}"
 
 
 if [ "$(echo "$test_model" | sed -E 's,\\t|\\r|\\n,,g')" != "$(cat /root/ws/test_node.ros | sed -E 's,\\t|\\r|\\n,,g')" ] ;then

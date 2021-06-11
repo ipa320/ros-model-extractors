@@ -32,13 +32,13 @@ cd path-to-ros-model-extractors-repo
 Call the ros-model extractor plugin, remember you have to also clone the repository to be analysed:
 
 ```
-[sudo] docker run -it haros_ROSDISTRO:latest /haros_runner.sh *package_name* *node_name* *type* *path_to_resulted_model* *workspace_path* *github_repository* *branch*
+[sudo] docker run -it haros_ROSDISTRO:latest /haros_runner.sh *package_name* *node_name* *type* *path_to_resulted_model* *workspace_path* "*github_repositoryA -b branch*" "*github_repositoryB*"...
 ```
 
 Where the type is the type of the analysis, now only the option "node" analysis is supported. Soon the option "launch" will be also available. The default configuration of our infrastructure expects the current path for the resulted model and the folder "/root/ws" for the workspace. The argument branch is optional.
 
 ```
-[sudo] docker run -it haros_ROSDISTRO:latest /haros_runner.sh *package_name* *node_name* *type* . /root/ws *github_repository* *branch*
+[sudo] docker run -it haros_ROSDISTRO:latest /haros_runner.sh *package_name* *node_name* *type* . /root/ws "*github_repositoryA -b branch*" "*github_repositoryB*"...
 ```
 
 Please check the available examples for the supported distros:

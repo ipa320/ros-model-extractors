@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM ros:melodic
+FROM osrf/ros:melodic-desktop
 
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 

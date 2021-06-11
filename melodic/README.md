@@ -11,12 +11,14 @@ cd path-to-ros-model-extrcators-repo
 Call the ros-model extractor plugin, remember you have to also clone the repository to be analysed:
 
 ```
-[sudo] docker run -it haros_melodic:latest /haros_runner.sh *package_name* *node_name* *type* *path_to_resulted_model* *workspace_path* *github_repository* *branch*
+[sudo] docker run -it haros_melodic:latest /haros_runner.sh *package_name* *node_name* *type* *path_to_resulted_model* *workspace_path* "*github_repositoryA -b branch*" "*github_repositoryB*"...
 ```
 
 For example:
 
 ```
 [sudo] docker run -it haros_melodic:latest /haros_runner.sh hokuyo_node hokuyo_node node . /root/ws https://github.com/ros-drivers/hokuyo_node
+
+[sudo] docker run -it haros_melodic:latest /haros_runner.sh ridgeback_base ridgeback_node  node . /root/ws https://github.com/ridgeback/ridgeback_robot https://github.com/clearpathrobotics/puma_motor_driver
 ```
 

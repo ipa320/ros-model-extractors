@@ -11,7 +11,7 @@ cd path-to-ros-model-extrcators-repo
 Call the ros-model extractor plugin, remember you have to also clone the repository to be analysed:
 
 ```
-[sudo] docker run -it haros_foxy:latest /haros_runner_ros2.sh *package_name* *node_name* *type* *path_to_resulted_model* *workspace_path* *github_repository* *branch*
+[sudo] docker run -it haros_foxy:latest /haros_runner.sh *package_name* *node_name* *type* *path_to_resulted_model* *workspace_path* "*github_repositoryA -b branch*" "*github_repositoryB*"...
 ```
 
 For example:
@@ -19,9 +19,10 @@ For example:
 ```
 [sudo] docker run -it haros_foxy:latest /haros_runner.sh sick_safetyscanners2 sick_safetyscanners2_node node . /root/ws  https://github.com/SICKAG/sick_safetyscanners2
 
-[sudo] docker run -it haros_foxy:latest /haros_runner.sh turtlesim turtlesim_node node . /root/ws https://github.com/ros/ros_tutorials foxy-devel
+[sudo] docker run -it haros_foxy:latest /haros_runner.sh turtlesim turtlesim_node node . /root/ws "https://github.com/ros/ros_tut
+orials -b foxy-devel"
 
-[sudo] docker run -it haros_foxy:latest /haros_runner.sh test_ros2 test_ros2 node . /root/ws https://github.com/ipa-nhg/test_ros2_code_extractor
+[sudo] docker run -it haros_foxy:latest /haros_runner.sh test_pkg test_node node . /root/ws "https://github.com/ipa-nhg/test_ros2_code_extractor -b ros2Parameters"
 
 ```
 

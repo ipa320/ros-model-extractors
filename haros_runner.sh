@@ -6,24 +6,20 @@
 #   3: Type of the request: either 'launch' or 'node'
 #   4: Path to the folder where the resulting model files should be stored
 #   5: Path to the ROS workspace 
-#   (optional) 6: Http address link of the Git repository 
-#   (optional) 7: Branch for the Git repository 
+#   (optional) from 6: Http address links of the Git repositories (to indicate the branch put the name of the repository between quotes and add the suffix -b *banch_name*, for example "https://github.com/ipa320/ros-model-extractors b main" 
 # Returns:
 #   (None)
 
 # scripts_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-if [ "$#" -eq 6 ]; then
-   cd "${5}"/src
-   git clone "${6}"
-   cd "${5}"
-fi
+number_of_args=$#
+number_of_repos=$((number_of_args-5))
 
-if [ "$#" -eq 7 ]; then
-   cd "${5}"/src
-   git clone "${6}" -b "${7}"
-   cd "${5}"
-fi
+for repo in "${@:6:$number_of_repos}"
+do
+  cd "${5}"/src
+  git clone $repo
+done
 
 cd "${5}"
 

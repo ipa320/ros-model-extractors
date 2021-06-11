@@ -11,12 +11,14 @@ cd path-to-ros-model-extrcators-repo
 Call the ros-model extractor plugin, remember you have to also clone the repository to be analysed:
 
 ```
-[sudo] docker run -it haros_noetic:latest /haros_runner.sh *package_name* *node_name* *type* *path_to_resulted_model* *workspace_path* *github_repository* *branch*
+[sudo] docker run -it haros_noetic:latest /haros_runner.sh *package_name* *node_name* *type* *path_to_resulted_model* *workspace_path* "*github_repositoryA -b branch*" "*github_repositoryB*"...
 ```
 
 For example:
 
 ```
 [sudo] docker run -it haros_noetic:latest /haros_runner.sh cob_sick_s300 cob_sick_s300 node . /root/ws https://github.com/ipa320/cob_driver
+
+[sudo] docker run -it haros_noetic:latest /haros_runner.sh test_pkg test_node node . /root/ws "https://github.com/ipa-nhg/test_ros_code_extractor -b ros1Parameters"
 ```
 
