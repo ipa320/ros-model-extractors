@@ -154,6 +154,59 @@ class RosExtractor():
                   srv_type = analysis._extract_message_type(call)
                   RosModel_node.add_service_client(name, srv_type.replace("/",".").replace("Response",""))
                   #roscomponent.add_interface(name,"srvcls", pkg_name+"."+art_name+"."+node_name+"."+name)
+            """
+            #PARAMETERS nhg:this needs review
+            nh_prefix = "c:@N@ros@S@NodeHandle@"
+            gets = ("getParam", "getParamCached", "param")
+            reads = gets + ("hasParam", "searchParam")
+            sets = ("setParam",)
+            writes = sets + ("deleteParam",)
+            for call in CodeQuery(gs).all_calls.where_name(reads).get():
+                if (call.full_name.startswith("ros::NodeHandle") or (isinstance(call.reference, str) and call.reference.startswith(nh_prefix))):
+                    param_type = default_value = None
+                    param_name = analysis._extract_topic(call)
+                    if call.name in gets:
+                        param_type = analysis._extract_param_type(call.arguments[1])
+                    if call.name == "param":
+                        if len(call.arguments) > 2:
+                            default_value = analysis._extract_param_value( call, arg_pos=2)
+                        elif len(call.arguments) == 2:
+                            default_value = analysis._extract_param_value( call, arg_pos=1)
+                    RosModel_node.add_parameter(param_name, default_value, param_type, default_value)
+            for call in CodeQuery(gs).all_calls.where_name(writes).get():
+                if (call.full_name.startswith("ros::NodeHandle") or (isinstance(call.reference, str) and call.reference.startswith(nh_prefix))):
+                    param_type = value = None
+                    param_name = analysis._extract_topic(call)
+                    if len(call.arguments) >= 2 and call.name in sets:
+                        param_type = analysis._extract_param_type(call.arguments[1])
+                        value = analysis._extract_param_value(call, arg_pos=1)
+                    RosModel_node.add_parameter(param_name, default_value, param_type, default_value)
+            ros_prefix = "c:@N@ros@N@param@"
+            gets = ("get", "getCached", "param")
+            reads = gets + ("has",)
+            sets = ("set",)
+            writes = sets + ("del",)
+            for call in CodeQuery(gs).all_calls.where_name(reads).get():
+                if (call.full_name.startswith("ros::param") or (isinstance(call.reference, str) and call.reference.startswith(ros_prefix))):
+                  param_type = default_value = None
+                  param_name = analysis._extract_topic(call)
+                  if call.name == "param":
+                      if call.name in gets:
+                          param_type = analysis._extract_param_type(call.arguments[1])
+                      if len(call.arguments) > 2:
+                          default_value = analysis._extract_param_value(call, arg_pos=2)
+                      elif len(call.arguments) == 2:
+                          default_value = analysis._extract_param_value(call, arg_pos=1)
+                      RosModel_node.add_parameter(param_name, default_value, param_type, default_value)
+            for call in CodeQuery(gs).all_calls.where_name(writes).get():
+                if (call.full_name.startswith("ros::param") or (isinstance(call.reference, str) and call.reference.startswith(ros_prefix))):
+                    param_type = value = None
+                    if len(call.arguments) >= 2 and call.name in sets:
+                        param_type = analysis._extract_param_type(call.arguments[1])
+                        value = analysis._extract_param_value(call, arg_pos=1)
+                    param_name = analysis._extract_topic(call)
+                    RosModel_node.add_parameter(param_name, default_value, param_type, default_value)
+            """
 
         if node.language == "py":
             msgs_list=[]
