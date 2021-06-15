@@ -4,7 +4,7 @@ Install docker https://docs.docker.com/install/linux/docker-ce/ubuntu/
 
 Build the HAROS docker image, for your desired ROS distro version:
 ```
-cd path-to-ros-model-extrcators-repo
+cd path-to-ros-model-extractors-repo
 [sudo] docker build --tag=haros_melodic -f melodic/Dockerfile .
 ```
 
