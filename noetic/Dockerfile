@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM ros:noetic
+FROM osrf/ros:noetic-desktop
 
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 

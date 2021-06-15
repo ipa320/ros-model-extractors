@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM osrf/ros:foxy-desktop
+FROM ros:foxy
 
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
