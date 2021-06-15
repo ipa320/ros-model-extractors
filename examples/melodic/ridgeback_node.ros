@@ -1,0 +1,19 @@
+PackageSet {
+  CatkinPackage ridgeback_base {
+    Artifact ridgeback_node {
+      Node { name ridgeback_node
+        Publishers {
+          Publisher { name 'joint_states' message 'sensor_msgs.JointState'},
+          Publisher { name 'mcu/cmd_fans' message 'ridgeback_msgs.Fans'},
+          Publisher { name 'mcu/cmd_lights' message 'ridgeback_msgs.Lights'},
+          Publisher { name 'wifi_connected' message 'std_msgs.Bool'}}
+        Subscribers {
+          Subscriber { name 'status' message 'puma_motor_msgs.MultiStatus'},
+          Subscriber { name '/imu/data_raw' message 'sensor_msgs.Imu'},
+          Subscriber { name 'mcu/status' message 'ridgeback_msgs.Status'},
+          Subscriber { name 'mcu/status' message 'ridgeback_msgs.Status'},
+          Subscriber { name 'mcu/status' message 'ridgeback_msgs.Status'},
+          Subscriber { name 'cmd_vel' message 'geometry_msgs.Twist'},
+          Subscriber { name 'cmd_lights' message 'ridgeback_msgs.Lights'},
+          Subscriber { name 'cmd_vel' message 'geometry_msgs.Twist'}}}
+}}}

@@ -1,0 +1,30 @@
+PackageSet {
+  CatkinPackage ur_robot_driver {
+    Artifact ur_robot_driver_node {
+      Node { name ur_robot_driver_node
+        ServiceServers {
+          ServiceServer { name 'program_state' service 'ur_dashboard_msgs.GetProgramState.'},
+          ServiceServer { name 'raw_request' service 'ur_dashboard_msgs.Raw.'},
+          ServiceServer { name 'program_saved' service 'ur_dashboard_msgs.IsProgramSaved'},
+          ServiceServer { name 'quit' service 'std_srvs.Trigger.'},
+          ServiceServer { name 'hand_back_control' service 'std_srvs.Trigger'},
+          ServiceServer { name 'get_loaded_program' service 'ur_dashboard_msgs.GetLoadedProgram.'},
+          ServiceServer { name 'get_robot_mode' service 'ur_dashboard_msgs.GetRobotMode'},
+          ServiceServer { name 'resend_robot_program' service 'std_srvs.Trigger'},
+          ServiceServer { name 'program_running' service 'ur_dashboard_msgs.IsProgramRunning'},
+          ServiceServer { name 'get_safety_mode' service 'ur_dashboard_msgs.GetSafetyMode'},
+          ServiceServer { name 'set_speed_slider' service 'ur_msgs.SetSpeedSliderFraction'},
+          ServiceServer { name 'add_to_log' service 'ur_dashboard_msgs.AddToLog.'},
+          ServiceServer { name 'popup' service 'ur_dashboard_msgs.Popup.'},
+          ServiceServer { name 'connect' service 'std_srvs.Trigger.'},
+          ServiceServer { name 'load_installation' service 'ur_dashboard_msgs.Load.'},
+          ServiceServer { name 'set_io' service 'ur_msgs.SetIO'},
+          ServiceServer { name 'zero_ftsensor' service 'std_srvs.Trigger'},
+          ServiceServer { name 'load_program' service 'ur_dashboard_msgs.Load.'},
+          ServiceServer { name 'set_payload' service 'ur_msgs.SetPayload.'},
+          ServiceServer { name '?' service 'std_srvs.Trigger.'}}
+        Publishers {
+          Publisher { name 'robot_program_running' message 'std_msgs.Bool'}}
+        Subscribers {
+          Subscriber { name 'script_command' message 'std_msgs.String'}}}
+}}}

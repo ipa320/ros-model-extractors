@@ -1,0 +1,9 @@
+PackageSet {
+  CatkinPackage cob_sick_s300 {
+    Artifact cob_sick_s300 {
+      Node { name cob_sick_s300
+        Publishers {
+          Publisher { name 'scan_standby' message 'std_msgs.Bool'},
+          Publisher { name 'scan' message 'sensor_msgs.LaserScan'},
+          Publisher { name '/diagnostics' message 'diagnostic_msgs.DiagnosticArray'}}}
+}}}

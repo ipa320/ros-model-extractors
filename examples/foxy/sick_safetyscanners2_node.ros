@@ -1,0 +1,12 @@
+PackageSet {
+  CatkinPackage sick_safetyscanners2 {
+    Artifact sick_safetyscanners2_node {
+      Node { name sick_safetyscanners2_node
+        ServiceServers {
+          ServiceServer { name 'field_data' service 'sick_safetyscanners2_interfaces.FieldData'}}
+        Publishers {
+          Publisher { name 'output_paths' message 'sick_safetyscanners2_interfaces.OutputPaths'},
+          Publisher { name 'scan' message 'sensor_msgs.LaserScan'},
+          Publisher { name 'raw_data' message 'sick_safetyscanners2_interfaces.RawMicroScanData'},
+          Publisher { name 'extended_scan' message 'sick_safetyscanners2_interfaces.ExtendedLaserScan'}}}
+}}}

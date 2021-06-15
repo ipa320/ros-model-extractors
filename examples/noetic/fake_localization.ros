@@ -1,0 +1,11 @@
+PackageSet {
+  CatkinPackage fake_localization {
+    Artifact fake_localization {
+      Node { name fake_localization
+        Publishers {
+          Publisher { name 'amcl_pose' message 'geometry_msgs.PoseWithCovarianceStamped'},
+          Publisher { name 'particlecloud' message 'geometry_msgs.PoseArray'}}
+        Subscribers {
+          Subscriber { name 'base_pose_ground_truth' message 'nav_msgs.Odometry'}}}
+}}}
+
