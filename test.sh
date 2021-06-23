@@ -17,7 +17,14 @@ test_model="PackageSet {
         Publishers {
           Publisher { name 'scan' message 'sensor_msgs.LaserScan'}}
         Subscribers {
-          Subscriber { name 'power_state' message 'sensor_msgs.BatteryState'}}}
+          Subscriber { name 'power_state' message 'sensor_msgs.BatteryState'}}
+        Parameters {
+          Parameter { name 'string_test' type String value 'test'},
+          Parameter { name 'bool_tets' type Boolean },
+          Parameter { name 'int_test' type Integer },
+          Parameter { name 'struc_test/last_element/hola' type Integer },
+          Parameter { name 'double_test' type Double },
+          Parameter { name 'struc_test/first_element' type Integer }}}
 }}}"
 
 ./haros_runner.sh test_pkg test_node node . /root/ws "https://github.com/ipa-nhg/test_ros_code_extractor -b ${1}"
