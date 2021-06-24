@@ -120,11 +120,12 @@ class RosExtractor():
         return 'Boolean'
     elif param_type == 'int' or param_type == 'long':
         return 'Integer'
-    elif (param_type == 'str' or 'basic_string<char>' in param_type):
+    elif (param_type == 'str' or 'basic_string<char>' in param_type or param_type == 'std::string'):
         return 'String'
-    elif param_type == 'yaml':
+    #elif param_type == 'yaml':
         #return 'Struct'
-        return None
+    #elif 'std::vector' in param_type:
+        #return 'List'
     else:
       return None
 
@@ -302,30 +303,49 @@ class RosExtractor():
                   queue_size = analysis._extract_queue_size(call, queue_pos=1)
                   if name!="?" or srv_type!="?":
                     RosModel_node.add_service_client(name, srv_type.replace("/",".").replace(".srv",""))
+          #PARAMETERS ROS2          
+          params=[]
+          written_params=[]
           for call in (CodeQuery(gs).all_calls.get()):
-              if "ParameterDescriptor" in str(call):
-                param_type = default_value = None
-                if len(call.arguments) > 1:
+            param_prefix = "c:@N@rclcpp@S@Node@F@"
+            declare_params = ("get_parameter","declare_parameter")
+            if (call.full_name.startswith("rclcpp::Node") or (isinstance(call.reference, str)) and call.reference.startswith(param_prefix)):
+              param_type = default_value = None
+              if(call.name in declare_params) and len(call.arguments) > 1:
                   param_name = analysis._extract_topic(call, topic_pos=0)
-                  default_value = resolve_expression(call.arguments[1])
-                  param_type = self.transform_type(resolve_expression(call))
-                  if not (((default_value is None) or (default_value == "") or ('[rclcpp::ParameterValue] (default)' in str(default_value))) and param_type is None):
-                    RosModel_node.add_parameter(param_name, default_value , param_type, None)
+                  if len(call.arguments) == 2:
+                    param_type= self.transform_type(resolve_expression(call.arguments[1]))
+                    params.append((param_name, param_type))
+                  elif len(call.arguments) > 2 and not ('[rclcpp::ParameterValue] (default)' in  str(resolve_expression(call.arguments[1]))):
+                    default_value = resolve_expression(call.arguments[1])
+                    param_type = self.transform_type(resolve_expression(call))
+                    params.append((param_name, param_type, default_value))
+          for parameter in params:
+            param_name_ = param_type_ = default_value_ = None
+            if len(parameter) > 2:
+              param_name_, param_type_, default_value_ = parameter
+              if not ((default_value_ is None or default_value_ == "") and param_type_ is None):
+                RosModel_node.add_parameter(param_name_.replace(".","/"), default_value_ , param_type_, None)
+                written_params.append(param_name_)
+            elif len(parameter) == 2:
+              param_name_, param_type_ = parameter
+              if not (param_type_ is None) and not (param_name_ in written_params):
+                RosModel_node.add_parameter(param_name_.replace(".","/"), default_value_ , param_type_, None)
 
   def parse_arg(self):
-    parser = argparse.ArgumentParser()
-    mutually_exclusive = parser.add_mutually_exclusive_group()
-    mutually_exclusive.add_argument('--node', '-n', help="node analyse", action='store_true')
-    mutually_exclusive.add_argument('--launch', '-l', help="launch analyse", action='store_true')
-    parser.add_argument('--model-path', help='path to the folder in which the model files should be saved',
-                        default='./',
-                        nargs='?', const='./')
-    parser.add_argument('--output', help='print the model output')
-    parser.add_argument('--package', required=True, dest='package_name')
-    parser.add_argument('--name', required=True, dest='name')
-    parser.add_argument('--ws', required=True, dest='worspace_path')
-    parser.add_argument('--path-to-src', required=False, dest='path_to_src')
-    self.args = parser.parse_args()
+      parser = argparse.ArgumentParser()
+      mutually_exclusive = parser.add_mutually_exclusive_group()
+      mutually_exclusive.add_argument('--node', '-n', help="node analyse", action='store_true')
+      mutually_exclusive.add_argument('--launch', '-l', help="launch analyse", action='store_true')
+      parser.add_argument('--model-path', help='path to the folder in which the model files should be saved',
+                          default='./',
+                          nargs='?', const='./')
+      parser.add_argument('--output', help='print the model output')
+      parser.add_argument('--package', required=True, dest='package_name')
+      parser.add_argument('--name', required=True, dest='name')
+      parser.add_argument('--ws', required=True, dest='worspace_path')
+      parser.add_argument('--path-to-src', required=False, dest='path_to_src')
+      self.args = parser.parse_args()
 
 
 class RosInterface:
