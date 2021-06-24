@@ -18,4 +18,4 @@ jobs:
     - name: Analyse the test ROS package for melodic
       run: |
         pushd ros-model-extractors
-        docker run haros_melodic:latest /test.sh ros1
+        docker run haros_melodic:latest /test.sh ros1Parameters

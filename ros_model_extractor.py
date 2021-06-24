@@ -28,7 +28,7 @@ from haros.extractor import NodeExtractor, RoscppExtractor, RospyExtractor
 from haros.metamodel import Node, Package, RosName, SourceFile
 from haros.launch_parser import LaunchParser, LaunchParserError, NodeTag
 from haros.cmake_parser import RosCMakeParser
-from bonsai.analysis import CodeQuery
+from bonsai.analysis import CodeQuery, resolve_expression
 
 try:
     from bonsai.cpp.clang_parser import CppAstParser
@@ -110,6 +110,26 @@ class RosExtractor():
     if self.args.output:
         print(model_str)
 
+  def transform_type(self, param_type):
+    if os.environ.get("ROS_VERSION") == "2":
+      param_type=str(param_type)
+      param_type=param_type[param_type.find("[")+1:param_type.find("]")]
+    if param_type == 'double':
+        return 'Double'
+    elif param_type == 'bool':
+        return 'Boolean'
+    elif param_type == 'int' or param_type == 'long':
+        return 'Integer'
+    elif (param_type == 'str' or 'basic_string<char>' in param_type or param_type == 'std::string'):
+        return 'String'
+    #elif param_type == 'yaml':
+        #return 'Struct'
+    #elif 'std::vector' in param_type:
+        #return 'List'
+    else:
+      return None
+
+
   def extract_primitives(self, node, parser, analysis, RosModel_node, roscomponent, pkg_name, node_name, art_name):
     gs = parser.global_scope
     node.source_tree = parser.global_scope
@@ -154,7 +174,7 @@ class RosExtractor():
                   srv_type = analysis._extract_message_type(call)
                   RosModel_node.add_service_client(name, srv_type.replace("/",".").replace("Response",""))
                   #roscomponent.add_interface(name,"srvcls", pkg_name+"."+art_name+"."+node_name+"."+name)
-            """
+            
             #PARAMETERS nhg:this needs review
             nh_prefix = "c:@N@ros@S@NodeHandle@"
             gets = ("getParam", "getParamCached", "param")
@@ -166,21 +186,24 @@ class RosExtractor():
                     param_type = default_value = None
                     param_name = analysis._extract_topic(call)
                     if call.name in gets:
-                        param_type = analysis._extract_param_type(call.arguments[1])
+                        param_type = self.transform_type(analysis._extract_param_type(call.arguments[1]))
                     if call.name == "param":
                         if len(call.arguments) > 2:
                             default_value = analysis._extract_param_value( call, arg_pos=2)
                         elif len(call.arguments) == 2:
                             default_value = analysis._extract_param_value( call, arg_pos=1)
-                    RosModel_node.add_parameter(param_name, default_value, param_type, default_value)
+                    if not ((default_value is None or default_value == "") and param_type is None):
+                      RosModel_node.add_parameter(param_name, default_value, param_type, None)
+      
             for call in CodeQuery(gs).all_calls.where_name(writes).get():
                 if (call.full_name.startswith("ros::NodeHandle") or (isinstance(call.reference, str) and call.reference.startswith(nh_prefix))):
                     param_type = value = None
                     param_name = analysis._extract_topic(call)
                     if len(call.arguments) >= 2 and call.name in sets:
-                        param_type = analysis._extract_param_type(call.arguments[1])
+                        param_type = self.transform_type(analysis._extract_param_type(call.arguments[1]))
                         value = analysis._extract_param_value(call, arg_pos=1)
-                    RosModel_node.add_parameter(param_name, default_value, param_type, default_value)
+                    if not ((default_value is None or default_value == "") and param_type is None):
+                      RosModel_node.add_parameter(param_name, default_value, param_type, None)
             ros_prefix = "c:@N@ros@N@param@"
             gets = ("get", "getCached", "param")
             reads = gets + ("has",)
@@ -192,21 +215,23 @@ class RosExtractor():
                   param_name = analysis._extract_topic(call)
                   if call.name == "param":
                       if call.name in gets:
-                          param_type = analysis._extract_param_type(call.arguments[1])
+                          param_type = self.transform_type(analysis._extract_param_type(call.arguments[1]))
                       if len(call.arguments) > 2:
                           default_value = analysis._extract_param_value(call, arg_pos=2)
                       elif len(call.arguments) == 2:
                           default_value = analysis._extract_param_value(call, arg_pos=1)
-                      RosModel_node.add_parameter(param_name, default_value, param_type, default_value)
+                      if not ((default_value is None or default_value == "") and param_type is None):
+                        RosModel_node.add_parameter(param_name, default_value, param_type, None)
             for call in CodeQuery(gs).all_calls.where_name(writes).get():
                 if (call.full_name.startswith("ros::param") or (isinstance(call.reference, str) and call.reference.startswith(ros_prefix))):
                     param_type = value = None
                     if len(call.arguments) >= 2 and call.name in sets:
-                        param_type = analysis._extract_param_type(call.arguments[1])
+                        param_type = self.transform_type(analysis._extract_param_type(call.arguments[1]))
                         value = analysis._extract_param_value(call, arg_pos=1)
                     param_name = analysis._extract_topic(call)
-                    RosModel_node.add_parameter(param_name, default_value, param_type, default_value)
-            """
+                    if not ((default_value is None or default_value == "") and param_type is None):
+                      RosModel_node.add_parameter(param_name, default_value, param_type, None)
+            
 
         if node.language == "py":
             msgs_list=[]
@@ -278,21 +303,49 @@ class RosExtractor():
                   queue_size = analysis._extract_queue_size(call, queue_pos=1)
                   if name!="?" or srv_type!="?":
                     RosModel_node.add_service_client(name, srv_type.replace("/",".").replace(".srv",""))
+          #PARAMETERS ROS2          
+          params=[]
+          written_params=[]
+          for call in (CodeQuery(gs).all_calls.get()):
+            param_prefix = "c:@N@rclcpp@S@Node@F@"
+            declare_params = ("get_parameter","declare_parameter")
+            if (call.full_name.startswith("rclcpp::Node") or (isinstance(call.reference, str)) and call.reference.startswith(param_prefix)):
+              param_type = default_value = None
+              if(call.name in declare_params) and len(call.arguments) > 1:
+                  param_name = analysis._extract_topic(call, topic_pos=0)
+                  if len(call.arguments) == 2:
+                    param_type= self.transform_type(resolve_expression(call.arguments[1]))
+                    params.append((param_name, param_type))
+                  elif len(call.arguments) > 2 and not ('[rclcpp::ParameterValue] (default)' in  str(resolve_expression(call.arguments[1]))):
+                    default_value = resolve_expression(call.arguments[1])
+                    param_type = self.transform_type(resolve_expression(call))
+                    params.append((param_name, param_type, default_value))
+          for parameter in params:
+            param_name_ = param_type_ = default_value_ = None
+            if len(parameter) > 2:
+              param_name_, param_type_, default_value_ = parameter
+              if not ((default_value_ is None or default_value_ == "") and param_type_ is None):
+                RosModel_node.add_parameter(param_name_.replace(".","/"), default_value_ , param_type_, None)
+                written_params.append(param_name_)
+            elif len(parameter) == 2:
+              param_name_, param_type_ = parameter
+              if not (param_type_ is None) and not (param_name_ in written_params):
+                RosModel_node.add_parameter(param_name_.replace(".","/"), default_value_ , param_type_, None)
 
   def parse_arg(self):
-    parser = argparse.ArgumentParser()
-    mutually_exclusive = parser.add_mutually_exclusive_group()
-    mutually_exclusive.add_argument('--node', '-n', help="node analyse", action='store_true')
-    mutually_exclusive.add_argument('--launch', '-l', help="launch analyse", action='store_true')
-    parser.add_argument('--model-path', help='path to the folder in which the model files should be saved',
-                        default='./',
-                        nargs='?', const='./')
-    parser.add_argument('--output', help='print the model output')
-    parser.add_argument('--package', required=True, dest='package_name')
-    parser.add_argument('--name', required=True, dest='name')
-    parser.add_argument('--ws', required=True, dest='worspace_path')
-    parser.add_argument('--path-to-src', required=False, dest='path_to_src')
-    self.args = parser.parse_args()
+      parser = argparse.ArgumentParser()
+      mutually_exclusive = parser.add_mutually_exclusive_group()
+      mutually_exclusive.add_argument('--node', '-n', help="node analyse", action='store_true')
+      mutually_exclusive.add_argument('--launch', '-l', help="launch analyse", action='store_true')
+      parser.add_argument('--model-path', help='path to the folder in which the model files should be saved',
+                          default='./',
+                          nargs='?', const='./')
+      parser.add_argument('--output', help='print the model output')
+      parser.add_argument('--package', required=True, dest='package_name')
+      parser.add_argument('--name', required=True, dest='name')
+      parser.add_argument('--ws', required=True, dest='worspace_path')
+      parser.add_argument('--path-to-src', required=False, dest='path_to_src')
+      self.args = parser.parse_args()
 
 
 class RosInterface:
