@@ -17,8 +17,8 @@ Call the ros-model extractor plugin, remember you have to also clone the reposit
 For example:
 
 ```
-[sudo] docker run -it haros_melodic:latest /haros_runner.sh hokuyo_node hokuyo_node node . /root/ws https://github.com/ros-drivers/hokuyo_node
+[sudo] docker run -it haros_melodic:latest /haros_runner.sh hokuyo_node hokuyo_node node . /home/extractor/ws https://github.com/ros-drivers/hokuyo_node
 
-[sudo] docker run -it haros_melodic:latest /haros_runner.sh ridgeback_base ridgeback_node  node . /root/ws https://github.com/ridgeback/ridgeback_robot https://github.com/clearpathrobotics/puma_motor_driver
+[sudo] docker run -it haros_melodic:latest /haros_runner.sh ridgeback_base ridgeback_node node . /home/extractor/ws https://github.com/ridgeback/ridgeback_robot https://github.com/clearpathrobotics/puma_motor_driver
 ```
 

@@ -38,7 +38,7 @@ then
     source install/setup.bash
     rosdep install -y -i -r --from-path src
     colcon build --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-    source /root/ws/install/setup.bash
+    source ${5}/install/setup.bash
     colcon list > /tmp/colcon_list.txt
     path_to_src_code=$(cat /tmp/colcon_list.txt |  grep "^$1" | awk '{ print $2}')
     if [ -z "$path_to_src_code" ]; then
@@ -59,14 +59,14 @@ echo ""
 #tree ${5}
 
 echo "## Init HAROS ##"
-
+mkdir -p "${4}"
 haros init
 
-echo "## Call the HAROS plugin to extract the ros-models ##"
 echo ""
+echo "## Call the HAROS plugin to extract the ros-models ##"
 if [ -n $PYTHON_VERSION ]
 then
-  if [ $PYTHON_VERSION == "2" ]
+  if [[ $PYTHON_VERSION == "2" ]]
   then
     if [ "${2}" = "--all" ]
     then
@@ -75,7 +75,7 @@ then
       python /ros_model_extractor.py --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --repo $model_repo>> extractor.log
     fi
     #cat extractor.log
-  elif [ $PYTHON_VERSION == "3" ]
+  elif [[ $PYTHON_VERSION == "3" ]]
   then
     if [ "${2}" = "--all" ]
     then
