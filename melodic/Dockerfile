@@ -63,13 +63,12 @@ RUN source /opt/ros/$ROS_DISTRO/setup.bash;\
  haros init
 
 ENV PYTHON_VERSION 2
+RUN echo 'source /home/extractor/ws/devel/setup.bash' >> /home/extractor/.bashrc 
 
+COPY ${path_to_scripts}messages_generator_runner.sh /
+COPY ${path_to_scripts}generate_messages_model_helper.sh /
 COPY ${path_to_scripts}haros_runner.sh /
 COPY ${path_to_scripts}ros_model_extractor.py /
 COPY ${path_to_scripts}test.sh /
 
-EXPOSE 4000
-
-ENTRYPOINT  if [ $enable_ssh ] ; then  sudo service ssh start && bash ; fi
-
-CMD []
+EXPOSE 4003
