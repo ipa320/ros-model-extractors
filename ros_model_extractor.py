@@ -97,7 +97,7 @@ class RosExtractor():
                         self.extract_primitives(node, parser, analysis, RosModel_node, roscomponent, pkg_name, node_name, name)
                         # SAVE ROS MODEL
                         ros_model = RosModelGenerator()
-                        ros_model.create_model_from_node(self.pkg.name,name, RosModel_node)
+                        ros_model.create_model_from_node(self.pkg.name,name, RosModel_node, self.args.repo)
                         model_str = ros_model.generate_ros_model(self.args.model_path+"/"+name+".ros")
                     except error:
                         print("The interfaces can't be extracted "+error)
@@ -345,6 +345,7 @@ class RosExtractor():
       parser.add_argument('--name', required=True, dest='name')
       parser.add_argument('--ws', required=True, dest='worspace_path')
       parser.add_argument('--path-to-src', required=False, dest='path_to_src')
+      parser.add_argument('--repo', required=False, dest='repo')
       self.args = parser.parse_args()
 
 

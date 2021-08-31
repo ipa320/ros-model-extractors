@@ -22,6 +22,7 @@ do
 done
 
 cd "${5}"
+model_repo=$(echo "${6}" | sed 's/ .*//')
 
 echo ""
 echo "## Install ROS pkgs dependencies ##"
@@ -67,11 +68,11 @@ if [ -n $PYTHON_VERSION ]
 then
   if [ $PYTHON_VERSION == "2" ]
   then
-    python /ros_model_extractor.py --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}">> extractor.log
+    python /ros_model_extractor.py --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --repo $model_repo>> extractor.log
     #cat extractor.log
   elif [ $PYTHON_VERSION == "3" ]
   then
-    python3 /ros_model_extractor.py --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code">> extractor.log
+    python3 /ros_model_extractor.py --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo>> extractor.log
     #cat extractor.log 
   else
     echo "Python version not supported"
