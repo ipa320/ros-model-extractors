@@ -61,7 +61,7 @@ class RosExtractor():
       self.pkg.path= self.args.path_to_src
     roscomponent = None
     #HAROS NODE EXTRACTOR
-    node = Node(node_name, self.pkg, rosname=RosName(node_name))
+
     srcdir = self.pkg.path[len(ws):]
     srcdir = os.path.join(ws, srcdir.split(os.sep, 1)[0])
     bindir = os.path.join(ws, "build")
@@ -72,41 +72,56 @@ class RosExtractor():
         parser.parse(os.path.join(self.pkg.path, "CMakeLists.txt"))
         for target in parser.executables.values():
             print("INFO: Found artifact: "+target.output_name)
-            if target.output_name == node_name:
+            if (self.args.a):
+                node_name = target.output_name
+                node = Node(node_name, self.pkg, rosname=RosName(node_name))
                 for file_in in target.files:
-                    full_path = file_in
-                    relative_path = full_path.replace(self.pkg.path+"/","").rpartition("/")[0]
-                    file_name = full_path.rsplit('/', 1)[-1]
-                    source_file = SourceFile(file_name, relative_path , self.pkg)
-                    node.source_files.append(source_file)
-        if node.language == "cpp":
-            parser = CppAstParser(workspace = ws)
-            analysis = RoscppExtractor(self.pkg, ws)
-        if node.language == "py":
-            parser = PyAstParser(workspace = ws)
-            analysis = RospyExtractor(self.pkg, ws)
-        #node.source_tree = parser.global_scope
-        for sf in node.source_files:
-            try:
-                if parser.parse(sf.path) is not None:
-                    # ROS MODEL EXTRACT PRIMITIVES 
-                    if node.language == "py":
-                        node_name=node_name.replace(".py","")
-                    RosModel_node=RosModelMetamodel.Node(node_name)
-                    try:
-                        self.extract_primitives(node, parser, analysis, RosModel_node, roscomponent, pkg_name, node_name, name)
-                        # SAVE ROS MODEL
-                        ros_model = RosModelGenerator()
-                        ros_model.create_model_from_node(self.pkg.name,name, RosModel_node, self.args.repo)
-                        model_str = ros_model.generate_ros_model(self.args.model_path+"/"+name+".ros")
-                    except error:
-                        print("The interfaces can't be extracted "+error)
-                else:
-                  print("The model couldn't be extracted")
-            except:
-                pass
-        if rossystem is not None and roscomponent is not None:
-            rossystem.add_component(roscomponent)
+                  full_path = file_in
+                  relative_path = full_path.replace(self.pkg.path+"/","").rpartition("/")[0]
+                  file_name = full_path.rsplit('/', 1)[-1]
+                  source_file = SourceFile(file_name, relative_path , self.pkg)
+                  node.source_files.append(source_file)
+            else:
+              if target.output_name == node_name:
+                  node = Node(node_name, self.pkg, rosname=RosName(node_name))
+                  for file_in in target.files:
+                      full_path = file_in
+                      relative_path = full_path.replace(self.pkg.path+"/","").rpartition("/")[0]
+                      file_name = full_path.rsplit('/', 1)[-1]
+                      source_file = SourceFile(file_name, relative_path , self.pkg)
+                      node.source_files.append(source_file)
+              else:
+                continue
+            if node.language == "cpp":
+              parser = CppAstParser(workspace = ws)
+              analysis = RoscppExtractor(self.pkg, ws)
+            if node.language == "python":
+              parser = PyAstParser(workspace = ws)
+              analysis = RospyExtractor(self.pkg, ws)
+          #node.source_tree = parser.global_scope
+            for sf in node.source_files:
+              try:
+                  if parser.parse(sf.path) is not None:
+                      # ROS MODEL EXTRACT PRIMITIVES 
+                      if node.language == "python":
+                          node_name=node_name.replace(".py","")
+                      RosModel_node=RosModelMetamodel.Node(node_name)
+                      try:
+                          self.extract_primitives(node, parser, analysis, RosModel_node, roscomponent, pkg_name, node_name, node_name)
+                          # SAVE ROS MODEL
+                          ros_model = RosModelGenerator()
+                          ros_model.create_model_from_node(self.pkg.name,node_name, RosModel_node, self.args.repo)
+                          print("Save model in:")
+                          print(self.args.model_path+"/"+node_name+".ros")
+                          model_str = ros_model.generate_ros_model(self.args.model_path+"/"+node_name+".ros")
+                      except error:
+                          print("The interfaces can't be extracted "+error)
+                  else:
+                    print("The model couldn't be extracted")
+              except:
+                  pass
+            if rossystem is not None and roscomponent is not None:
+                rossystem.add_component(roscomponent)
     if self.args.output:
         print(model_str)
 
@@ -233,7 +248,7 @@ class RosExtractor():
                       RosModel_node.add_parameter(param_name, default_value, param_type, None)
             
 
-        if node.language == "py":
+        if node.language == "python":
             msgs_list=[]
             for i in parser.imported_names_list:
                 if "msg" in str(i) or "srv" in str(i):
@@ -342,10 +357,11 @@ class RosExtractor():
                           nargs='?', const='./')
       parser.add_argument('--output', help='print the model output')
       parser.add_argument('--package', required=True, dest='package_name')
-      parser.add_argument('--name', required=True, dest='name')
+      parser.add_argument('--name', required=False, dest='name')
       parser.add_argument('--ws', required=True, dest='worspace_path')
       parser.add_argument('--path-to-src', required=False, dest='path_to_src')
       parser.add_argument('--repo', required=False, dest='repo')
+      parser.add_argument('-a', action='store_true')
       self.args = parser.parse_args()
 
 

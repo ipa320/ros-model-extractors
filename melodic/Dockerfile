@@ -22,8 +22,10 @@ RUN pip install -Iv clang==10.0.1
 RUN pip install -e git+https://github.com/timtadh/pyflwor.git#egg=pyflwor
 #RUN pip install -e git+https://github.com/ipa320/ros_model_parser.git#egg=ros_model_parser
 RUN pip install -e git+https://github.com/ipa-nhg/ros_model_parser.git@GitRepo#egg=ros_model_parser
-RUN pip install haros
-RUN pip install bonsai-code
+RUN pip install -e git+https://github.com/git-afsantos/haros#egg=haros
+RUN pip install -e git+https://github.com/ipa-nhg/bonsai@Fix#egg=bonsai-code
+#RUN pip install haros
+#RUN pip install bonsai-code
 
 RUN apt-get update && apt-get install -y ros-melodic-desktop && apt upgrade -y
 
@@ -46,6 +48,7 @@ RUN source /opt/ros/$ROS_DISTRO/setup.bash;\
 
 ENV PYTHON_VERSION 2
 
+RUN ls
 COPY haros_runner.sh /
 COPY ros_model_extractor.py /
 COPY test.sh /
