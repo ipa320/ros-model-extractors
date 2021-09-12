@@ -104,7 +104,7 @@ do
 echo "~~~~~~~~~~~"
 echo "Print of the model: $generated_model:"
 echo "~~~~~~~~~~~"
-cat "${4}"/$generated_model
+cat $generated_model
 echo ""
 echo "~~~~~~~~~~~"
 echo "###########"
