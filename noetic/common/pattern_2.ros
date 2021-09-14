@@ -1,7 +1,0 @@
-PackageSet {
-  CatkinPackage pattern_2 {
-    Artifact pattern_2 {
-      Node { name pattern_2
-        Publishers {
-          Publisher { name 'map' message 'nav_msgs.OccupancyGrid'}}}
-}}}

@@ -1,7 +1,0 @@
-PackageSet {
-  CatkinPackage pattern_27 {
-    Artifact pattern_27 {
-      Node { name pattern_27
-        Publishers {
-          Publisher { name 'pose' message 'geometry_msgs.PoseStamped'}}}
-}}}

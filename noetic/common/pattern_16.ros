@@ -1,7 +1,0 @@
-PackageSet {
-  CatkinPackage pattern_16 {
-    Artifact pattern_16 {
-      Node { name pattern_16
-        Publishers {
-          Publisher { name 'features' message 'calibration_msgs.CalibrationPattern'}}}
-}}}

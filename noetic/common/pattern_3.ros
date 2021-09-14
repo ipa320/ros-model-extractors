@@ -1,7 +1,0 @@
-PackageSet {
-  CatkinPackage pattern_3 {
-    Artifact pattern_3 {
-      Node { name pattern_3
-        Publishers {
-          Publisher { name 'marker' message 'visualization_msgs.Marker'}}}
-}}}

@@ -1,7 +1,0 @@
-PackageSet {
-  CatkinPackage pattern_36 {
-    Artifact pattern_36 {
-      Node { name pattern_36
-        Subscribers {
-          Subscriber { name '?' message '?'}}}
-}}}

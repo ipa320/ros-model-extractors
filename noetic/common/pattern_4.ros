@@ -1,7 +1,0 @@
-PackageSet {
-  CatkinPackage pattern_4 {
-    Artifact pattern_4 {
-      Node { name pattern_4
-        Publishers {
-          Publisher { name 'scan' message 'sensor_msgs.LaserScan'}}}
-}}}

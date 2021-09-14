@@ -1,7 +1,0 @@
-PackageSet {
-  CatkinPackage pattern_38 {
-    Artifact pattern_38 {
-      Node { name pattern_38
-        Subscribers {
-          Subscriber { name 'joint_states' message 'sensor_msgs.JointState'}}}
-}}}

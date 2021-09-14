@@ -1,7 +1,0 @@
-PackageSet {
-  CatkinPackage pattern_1 {
-    Artifact pattern_1 {
-      Node { name pattern_1
-        Publishers {
-          Publisher { name 'voltage' message 'std_msgs.Float64'}}}
-}}}

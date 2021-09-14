@@ -1,7 +1,0 @@
-PackageSet {
-  CatkinPackage pattern_15 {
-    Artifact pattern_15 {
-      Node { name pattern_15
-        Publishers {
-          Publisher { name 'settled_interval' message 'calibration_msgs.Interval'}}}
-}}}
