@@ -1,0 +1,7 @@
+PackageSet {
+  CatkinPackage pattern_6 {
+    Artifact pattern_6 {
+      Node { name pattern_6
+        Subscribers {
+          Subscriber { name '/sync_set_position' message 'dynamixel_sdk_examples.SyncSetPosition'}}}
+}}}

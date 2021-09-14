@@ -1,0 +1,8 @@
+PackageSet {
+  CatkinPackage pattern_17 {
+    Artifact pattern_17 {
+      Node { name pattern_17
+        Publishers {
+          Publisher { name 'rpms' message 'std_msgs.UInt16'},
+          Publisher { name 'scan' message 'sensor_msgs.LaserScan'}}}
+}}}

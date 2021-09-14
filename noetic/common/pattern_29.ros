@@ -1,0 +1,7 @@
+PackageSet {
+  CatkinPackage pattern_29 {
+    Artifact pattern_29 {
+      Node { name pattern_29
+        Publishers {
+          Publisher { name 'mag' message 'sensor_msgs.MagneticField'}}}
+}}}

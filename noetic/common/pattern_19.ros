@@ -1,0 +1,7 @@
+PackageSet {
+  CatkinPackage pattern_19 {
+    Artifact pattern_19 {
+      Node { name pattern_19
+        Publishers {
+          Publisher { name 'trajectory' message 'nav_msgs.Path'}}}
+}}}

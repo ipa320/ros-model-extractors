@@ -1,0 +1,7 @@
+PackageSet {
+  CatkinPackage pattern_35 {
+    Artifact pattern_35 {
+      Node { name pattern_35
+        Subscribers {
+          Subscriber { name 'imu' message 'sensor_msgs.Imu'}}}
+}}}

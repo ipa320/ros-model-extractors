@@ -1,0 +1,7 @@
+PackageSet {
+  CatkinPackage pattern_28 {
+    Artifact pattern_28 {
+      Node { name pattern_28
+        Subscribers {
+          Subscriber { name '?' message 'topic_tools.ShapeShifter'}}}
+}}}

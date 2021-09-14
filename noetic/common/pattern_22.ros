@@ -1,0 +1,11 @@
+PackageSet {
+  CatkinPackage pattern_22 {
+    Artifact pattern_22 {
+      Node { name pattern_22
+        Publishers {
+          Publisher { name 'base_scan' message 'sensor_msgs.LaserScan'},
+          Publisher { name '/tf' message 'tf2_msgs.TFMessage'}}
+        Subscribers {
+          Subscriber { name 'map' message 'nav_msgs.OccupancyGrid'},
+          Subscriber { name 'initialpose' message 'geometry_msgs.PoseWithCovarianceStamped'}}}
+}}}

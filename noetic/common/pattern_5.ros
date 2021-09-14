@@ -1,0 +1,7 @@
+PackageSet {
+  CatkinPackage pattern_5 {
+    Artifact pattern_5 {
+      Node { name pattern_5
+        Publishers {
+          Publisher { name '?' message 'sensor_msgs.LaserScan'}}}
+}}}

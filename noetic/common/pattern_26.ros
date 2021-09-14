@@ -1,0 +1,7 @@
+PackageSet {
+  CatkinPackage pattern_26 {
+    Artifact pattern_26 {
+      Node { name pattern_26
+        Subscribers {
+          Subscriber { name 'camera_info' message 'sensor_msgs.CameraInfo'}}}
+}}}

@@ -1,0 +1,8 @@
+PackageSet {
+  CatkinPackage pattern_13 {
+    Artifact pattern_13 {
+      Node { name pattern_13
+        Publishers {
+          Publisher { name 'particlecloud' message 'geometry_msgs.PoseArray'},
+          Publisher { name 'amcl_pose' message 'geometry_msgs.PoseWithCovarianceStamped'}}}
+}}}

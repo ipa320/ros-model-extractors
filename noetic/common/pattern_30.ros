@@ -1,0 +1,7 @@
+PackageSet {
+  CatkinPackage pattern_30 {
+    Artifact pattern_30 {
+      Node { name pattern_30
+        Subscribers {
+          Subscriber { name 'ImageFeature0D' message 'posedetection_msgs.ImageFeature0D'}}}
+}}}

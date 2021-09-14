@@ -1,0 +1,7 @@
+PackageSet {
+  CatkinPackage pattern_20 {
+    Artifact pattern_20 {
+      Node { name pattern_20
+        Subscribers {
+          Subscriber { name '?' message 'sensor_msgs.LaserScan'}}}
+}}}
