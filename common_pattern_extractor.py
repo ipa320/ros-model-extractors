@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from ros_model_parser.rosmodel_parser import RosModelParser
-from ros_model_parser.model_comparator import compare_ros_models
+from ros_model_parser.model_comparator import extract_common_ros
 import ros_metamodels.ros_metamodel_core as rosmodel
 import ros_model_generator.rosmodel_generator as model_generator
 import os.path
@@ -15,8 +15,9 @@ def extract_common_patterns(model_files):
         for j in range(i + 1, len(model_files)):
             model_a = RosModelParser(model_files[i], isFile=True).parse()
             model_b = RosModelParser(model_files[j], isFile=True).parse()
-            res = compare_ros_models(model_a, model_b)
-            if res[0] or res[1]:
+            res = extract_common_ros(model_a, model_b)
+            if res[0] or res[1] or res[2] or res[3] or res[4] or res[5]:
+                print(res)
                 set_common_models.add(res)
 
     return set_common_models
@@ -24,6 +25,8 @@ def extract_common_patterns(model_files):
 def generate_model(model_tuple, pkg_name, artifact_name, model_path):
     ros_node = rosmodel.Node(artifact_name)
 
+    # these tuples should either be named (dict) or
+    # the function has to be moved to ros_model_parser
     is_empty = True
     if model_tuple[0]:
         is_empty = False
@@ -34,6 +37,26 @@ def generate_model(model_tuple, pkg_name, artifact_name, model_path):
         is_empty = False
         for sub in model_tuple[1]:
             ros_node.add_subscriber(sub[0], sub[1])
+
+    if model_tuple[2]:
+        is_empty = False
+        for srv in model_tuple[2]:
+            ros_node.add_service_server(srv[0], srv[1])
+
+    if model_tuple[3]:
+        is_empty = False
+        for srv in model_tuple[3]:
+            ros_node.add_service_client(srv[0], srv[1])
+
+    if model_tuple[4]:
+        is_empty = False
+        for act in model_tuple[4]:
+            ros_node.add_action_server(act[0], act[1])
+
+    if model_tuple[5]:
+        is_empty = False
+        for act in model_tuple[5]:
+            ros_node.add_action_client(act[0], act[1])
 
     if is_empty:
         return
