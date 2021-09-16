@@ -1,0 +1,20 @@
+version: "3"
+services:
+  melodic:
+    image: haros_melodic
+    container_name: melodic2
+    tty: true
+    volumes:
+      - ./results/melodic:/root/results
+  noetic:
+    image: haros_noetic
+    container_name: noetic2
+    tty: true
+    volumes:
+      - ./results/noetic:/root/results
+#  foxy:
+#    image: haros_foxy
+#    container_name: foxy2
+#    tty: true
+#    volumes:
+#      - ./results:/root/results

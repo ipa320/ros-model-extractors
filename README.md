@@ -41,6 +41,12 @@ Where the type is the type of the analysis, now only the option "node" analysis 
 [sudo] docker run -it haros_ROSDISTRO:latest /haros_runner.sh *package_name* *node_name* *type* . /root/ws "*github_repositoryA -b branch*" "*github_repositoryB*"...
 ```
 
+Additionally, the analysis offers the option to analyze all the nodes of a package recursively:
+
+```
+[sudo] docker run -it haros_ROSDISTRO:latest /haros_runner.sh *package_name* --all *type* . /root/ws "*github_repositoryA -b branch*" "*github_repositoryB*"...
+```
+
 Please check the available examples for the supported distros:
 
 - [ROS1 melodic](melodic/README.md)

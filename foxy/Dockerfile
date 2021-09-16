@@ -20,9 +20,10 @@ ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib/llvm-10/lib
 RUN pip3 install --upgrade pip
 RUN pip3 install -Iv clang==10.0.1
 RUN pip3 install -e git+https://github.com/timtadh/pyflwor.git#egg=pyflwor
-RUN pip3 install -e git+https://github.com/ipa320/haros.git@ros2#egg=haros
-RUN pip3 install -e git+https://github.com/ipa320/ros_model_parser.git#egg=ros_model_parser
-RUN pip3 install bonsai-code
+#RUN pip3 install -e git+https://github.com/ipa320/ros_model_parser.git#egg=ros_model_parser
+RUN pip3 install -e git+https://github.com/ipa-nhg/ros_model_parser.git@GitRepo#egg=ros_model_parser
+RUN pip3 install -e git+https://github.com/git-afsantos/haros#egg=haros
+RUN pip3 install -e git+https://github.com/ipa-nhg/bonsai@Fix#egg=bonsai-code
 
 RUN apt-get update && apt-get install -y ros-foxy-desktop && apt upgrade -y
 

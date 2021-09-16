@@ -2,7 +2,7 @@
 
 # Arguments:
 #   1: Package name
-#   2: Node name or launch file name
+#   2: Node name or launch file name or '--all' to analyse all the available nodes 
 #   3: Type of the request: either 'launch' or 'node'
 #   4: Path to the folder where the resulting model files should be stored
 #   5: Path to the ROS workspace 
@@ -22,6 +22,7 @@ do
 done
 
 cd "${5}"
+model_repo=$(echo "${6}" | sed 's/ .*//')
 
 echo ""
 echo "## Install ROS pkgs dependencies ##"
@@ -44,7 +45,7 @@ then
       echo "** ERROR: Package ${1} not found in the workspace **"
       exit
     fi
-    path_to_src_code="/root/ws/$path_to_src_code"
+    path_to_src_code="${5}/$path_to_src_code"
   else
     echo "ROS version not supported"
     exit
@@ -61,17 +62,27 @@ echo "## Init HAROS ##"
 
 haros init
 
-echo ""
 echo "## Call the HAROS plugin to extract the ros-models ##"
+echo ""
 if [ -n $PYTHON_VERSION ]
 then
   if [ $PYTHON_VERSION == "2" ]
   then
-    python /ros_model_extractor.py --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}">> extractor.log
+    if [ "${2}" = "--all" ]
+    then
+      python /ros_model_extractor.py --package "$1" --"${3}" --model-path "${4}" --ws "${5}" --repo $model_repo -a>> extractor.log
+    else
+      python /ros_model_extractor.py --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --repo $model_repo>> extractor.log
+    fi
     #cat extractor.log
   elif [ $PYTHON_VERSION == "3" ]
   then
-    python3 /ros_model_extractor.py --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code">> extractor.log
+    if [ "${2}" = "--all" ]
+    then
+      python3 /ros_model_extractor.py --package "$1" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo -a >> extractor.log
+    else
+      python3 /ros_model_extractor.py --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo>> extractor.log
+    fi
     #cat extractor.log 
   else
     echo "Python version not supported"
@@ -82,19 +93,19 @@ else
 fi
 
 
+echo "~~~~~~~~~~~"
+echo "Extraction finished. See the following report:"
+cat extractor.log
+echo "~~~~~~~~~~~"
 
-if [ ! -f "${4}"/"$2".ros ]; then
-  echo "~~~~~~~~~~~"
-  echo "The model couldn't be generated, the analisys failed. See the following report:"
-  cat extractor.log
-  echo "~~~~~~~~~~~"
-else
-  echo "###########"
-  echo "~~~~~~~~~~~"
-  echo "Print of the model: $2.ros:"
-  echo "~~~~~~~~~~~"
-  cat "${4}"/"$2".ros
-  echo ""
-  echo "~~~~~~~~~~~"
-  echo "###########"
-fi
+echo "###########"
+for generated_model in "${4}"/*.ros
+do
+echo "~~~~~~~~~~~"
+echo "Print of the model: $generated_model:"
+echo "~~~~~~~~~~~"
+cat $generated_model
+echo ""
+echo "~~~~~~~~~~~"
+echo "###########"
+done
