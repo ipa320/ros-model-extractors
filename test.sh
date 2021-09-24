@@ -38,9 +38,9 @@ declare -a InterfacesArray=("ServiceServer { name 'setBool' service 'std_srvs.Se
 "Parameter { name 'double_test' type Double }"
 "Parameter { name 'struc_test/first_element' type Integer }")
 
-./haros_runner.sh test_pkg test_node node . /root/ws "https://github.com/ipa-nhg/test_ros_code_extractor -b ${1}"
+bash /haros_runner.sh test_pkg test_node node .  /home/extractor/ws "https://github.com/ipa-nhg/test_ros_code_extractor -b ${1}"
 
-resulted_model=$(cat /root/ws/test_node.ros | sed -E 's,\\t|\\r|\\n,,g')
+resulted_model=$(cat  /home/extractor/ws/test_node.ros | sed -E 's,\\t|\\r|\\n,,g')
 
 for interface in "${InterfacesArray[@]}"
 do
