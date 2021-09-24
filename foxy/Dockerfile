@@ -33,11 +33,17 @@ RUN apt-get update && apt-get install -y ros-foxy-desktop && apt upgrade -y
 
 SHELL ["bash", "-c"]
 
-RUN useradd -rm -d /home/extractor/ -s /bin/bash -g root -G sudo -u 1001 extractor
-RUN adduser extractor sudo
+RUN useradd -rm -d /home/extractor/  -u 1001 extractor
+#RUN useradd -rm -d /home/extractor/ -s /bin/bash -g extractor -G sudo root -u 1001 extractor
+RUN usermod -a -G sudo extractor
+RUN usermod -a -G root extractor
 RUN echo "extractor ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/extractor
 USER extractor
 RUN mkdir -p /home/extractor/ws/src
+
+RUN mkdir -p /home/extractor/results
+RUN chown extractor:extractor /home/extractor/results
+USER extractor
 WORKDIR /home/extractor
 
 # SSH CONFIGURATION
@@ -52,6 +58,7 @@ COPY --chown=extractor:root ssh_config/ /keys/
 RUN if [ $enable_ssh ] ; then  cat /keys/ssh_key.pub >> /home/extractor/.ssh/authorized_keys ; fi
 RUN if [ $enable_ssh ] ; then  cat /keys/config >> /home/extractor/.ssh/config ; fi
 ####
+USER extractor
 
 ENV CMAKE_CXX_COMPILER /usr/lib/llvm-10/bin/clang++
 RUN source /opt/ros/$ROS_DISTRO/setup.bash;\
@@ -70,3 +77,4 @@ COPY ${path_to_scripts}ros_model_extractor.py /
 COPY ${path_to_scripts}test.sh /
 
 EXPOSE 4005
+#CMD sudo chown -R extractor:extractor /home/extractor/results
