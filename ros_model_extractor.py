@@ -57,8 +57,10 @@ class RosExtractor():
     if os.environ.get("ROS_VERSION") == "1":
       rospack = rospkg.RosPack()
       self.pkg.path = rospack.get_path(pkg_name)
+      self.pkg_type="CatkinPackage"
     elif os.environ.get("ROS_VERSION") == "2":
       self.pkg.path= self.args.path_to_src
+      self.pkg_type="AmentPackage"
     roscomponent = None
     #HAROS NODE EXTRACTOR
 
@@ -110,7 +112,7 @@ class RosExtractor():
                           self.extract_primitives(node, parser, analysis, RosModel_node, roscomponent, pkg_name, node_name, node_name)
                           # SAVE ROS MODEL
                           ros_model = RosModelGenerator()
-                          ros_model.create_model_from_node(self.pkg.name,node_name, RosModel_node, self.args.repo)
+                          ros_model.create_model_from_node(self.pkg.name,node_name, RosModel_node, self.args.repo, self.pkg_type)
                           print("Save model in:")
                           print(self.args.model_path+"/"+node_name+".ros")
                           model_str = ros_model.generate_ros_model(self.args.model_path+"/"+node_name+".ros")

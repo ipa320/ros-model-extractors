@@ -6,8 +6,16 @@
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 
+if [ "${1}" == "melodic" ]; then
+  package_type="CatkinPackage"
+elif [ "${1}" == "noetic" ]; then
+  package_type="CatkinPackage"
+elif [ "${1}" == "foxy" ]; then
+  package_type="AmentPackage"
+fi
+
 test_model="PackageSet {
-  CatkinPackage test_pkg {
+  $package_type test_pkg {
     Artifact test_node {
       Node { name test_node
         ServiceServers {
