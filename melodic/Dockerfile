@@ -25,8 +25,9 @@ RUN pip install --upgrade pip
 RUN pip install -Iv clang==10.0.1
 RUN pip install -e git+https://github.com/timtadh/pyflwor.git#egg=pyflwor
 RUN pip install -e git+https://github.com/ipa320/ros_model_parser.git#egg=ros_model_parser
-RUN pip install -e git+https://github.com/git-afsantos/haros#egg=haros
-RUN pip install -e git+https://github.com/ipa-nhg/bonsai@Fix#egg=bonsai-code
+RUN pip install -e git+https://github.com/git-afsantos/bonsai#egg=bonsai-code
+RUN pip install -e git+https://github.com/ipa-nhg/haros@FixPythonExtractTopic#egg=haros
+# RUN pip install -e git+https://github.com/git-afsantos/haros#egg=haros
 
 RUN apt-get update && apt-get install -y ros-melodic-desktop && apt upgrade -y
 
