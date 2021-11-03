@@ -23,8 +23,13 @@ done
 
 cd "${5}"
 model_repo=$(echo "${6}" | sed 's/ .*//')
-source devel/setup.bash
-source install/setup.bash
+
+if [ -d "${5}/devel" ]; then
+  source devel/setup.bash
+else
+  source install/setup.bash
+fi
+
 
 echo ""
 echo "## Install ROS pkgs dependencies ##"
