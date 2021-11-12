@@ -325,7 +325,7 @@ class RosExtractor():
                   if name!="?" or msg_type!="?":
                     RosModel_node.add_subscriber(name, msg_type.replace("/",".").replace(".msg",""))
           for call in (CodeQuery(gs).all_calls.get()):
-              if "Service" in str(call):
+              if "rclcpp::Service" in str(call):
                 #print(call)
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
@@ -334,7 +334,7 @@ class RosExtractor():
                   if name!="?" or srv_type!="?":
                     RosModel_node.add_service_server(name, srv_type.replace("/",".").replace(".srv",""))
           for call in (CodeQuery(gs).all_calls.get()):
-              if "Client" in str(call):
+              if "rclcpp::Client" in str(call):
                 #print(call)
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
@@ -342,6 +342,20 @@ class RosExtractor():
                   queue_size = analysis._extract_queue_size(call, queue_pos=1)
                   if name!="?" or srv_type!="?":
                     RosModel_node.add_service_client(name, srv_type.replace("/",".").replace(".srv",""))
+              if "rclcpp_action::Client" in str(call):
+                if len(call.arguments) > 1:
+                  name = analysis._extract_topic(call, topic_pos=0)
+                  act_type = analysis._extract_message_type(call)
+                  queue_size = analysis._extract_queue_size(call, queue_pos=1)
+                  if name!="?" or act_type!="?":
+                    RosModel_node.add_action_client(name, act_type.replace("/",".").replace(".action",""))
+              if "rclcpp_action::Server" in str(call):
+                if len(call.arguments) > 1:
+                  name = analysis._extract_topic(call, topic_pos=0)
+                  act_type = analysis._extract_message_type(call)
+                  queue_size = analysis._extract_queue_size(call, queue_pos=1)
+                  if name!="?" or act_type!="?":
+                    RosModel_node.add_action_server(name, act_type.replace("/",".").replace(".action",""))
           #PARAMETERS ROS2          
           params=[]
           written_params=[]
