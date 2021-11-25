@@ -16,8 +16,6 @@ def get_package_names_in_repo(url, branch):
     user, repo = _get_user_repo(url)
     api = "https://api.github.com/repos/{}/{}/git/trees/{}?recursive=1".format(user, repo, branch)
 
-    my_username = 'ipa-hsd'
-    my_token = '$plend0R'
     req = requests.get(api, auth=(my_username, my_token))
     pkgs = req.json()['tree']
     for pkg in pkgs:

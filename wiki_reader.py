@@ -30,10 +30,10 @@ def _get_pkg_info(soup, distro, id='package-info'):
    return pkg_info
 
 
-def read_wiki_page(wiki_page):
+def read_url(url):
    soup = None
    try:
-      with urllib.request.urlopen("http://wiki.ros.org.ros.informatik.uni-freiburg.de/" + wiki_page) as f:
+      with urllib.request.urlopen(url) as f:
          content = f.read()
          soup = bs4.BeautifulSoup(content, features="html.parser")
 
@@ -43,8 +43,17 @@ def read_wiki_page(wiki_page):
    return soup
 
 
-def extract_repo_from_wiki(wiki_page, ros_distro):
-   soup = read_wiki_page(wiki_page)
+def read_wiki_page(wiki_page):
+   wiki_url = 'http://wiki.ros.org.ros.informatik.uni-freiburg.de/' + wiki_page
+   return read_url(wiki_url)
+
+
+def extract_repo_from_wiki(wiki_page, ros_distro, abs=False):
+   soup = None
+   if abs:
+      soup = read_url(wiki_page)
+   else:
+      soup = read_wiki_page(wiki_page)
 
    if soup is not None:
       pkg_info = _get_pkg_info(soup, ros_distro)
