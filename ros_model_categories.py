@@ -28,5 +28,3 @@ if __name__ == '__main__':
 
                         repos.append(repo[0])
             print('')
-
-

@@ -26,9 +26,6 @@ def _get_pkg_info(soup, distro, id='package-info'):
    pkg_info = []
    if div is not None:  
       pkg_info = div.findAll('li')
-      # print(pkg_info)
-         # if type(li) is not bs4.element.NavigableString:
-         # pkg_info.extend(li.findAll('a')[])
 
    return pkg_info
 
