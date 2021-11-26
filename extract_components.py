@@ -20,7 +20,7 @@ def get_package_names_in_repo(url, branch):
     if branch is None:
         api_url = git_api + '/{}/{}'.format(user, repo)
         try:
-            branch = requests.get(api_url, auth=(my_username, my_token)).json()['default_branch']
+            branch = requests.get(api_url).json()['default_branch']
         except KeyError as e:
             print(e)
             return None, None
