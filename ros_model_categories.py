@@ -24,7 +24,6 @@ def extract_repos_from_meta_page(page, elem, func):
         for a in links:
             category = soup.find(elem, id=a['href'].replace('#', ''))
             if category is not None:
-                print(category['id'])
                 links = func(category)
                 for a in links:
                     repo = wr.extract_repo_from_wiki(a['href'], 'melodic')
@@ -36,6 +35,34 @@ def extract_repos_from_meta_page(page, elem, func):
             print('')
 
 
+def extract_repos_from_rosi(url):
+    soup = wr.read_url(url)
+    repos = list()
+
+    if soup is not None:
+        links = soup.findAll("a")
+        for link in links:
+            if link.text == 'Link to ROS Driver':
+                git = None
+                branch = None
+                href = link['href']
+                if 'github.com' in href and href not in repos:
+                    git = href
+                    repos.append(href)
+                elif 'wiki.ros.org' in href:
+                    repo = wr.extract_repo_from_wiki(href, 'melodic', abs=True)
+                    if type(repo) == list and repo[0] not in repos and 'github.com' in repo[0]:
+                        git = repo[0]
+                        branch = repo[1]
+                        repos.append(repo[0])
+                if git is not None:
+                    pkgs, branch = ec.get_package_names_in_repo(git, branch)
+                    if pkgs is not None and branch is not None:
+                        for pkg in pkgs:
+                            ec.extract_component(git, pkg, branch, 'melodic', '3D_Sensors_Range_finders_RGB-D_cameras')
+
+
 if __name__ == '__main__':
-    extract_repos_from_meta_page('imu_drivers', 'h2', _func1)
+    # extract_repos_from_meta_page('imu_drivers', 'h2', _func1)
     # extract_repos_from_meta_page('Sensors', 'h3', _func2)
+    extract_repos_from_rosi('https://rosindustrial.org/3d-camera-survey')
