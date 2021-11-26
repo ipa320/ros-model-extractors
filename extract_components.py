@@ -14,9 +14,20 @@ def _get_user_repo(url):
 def get_package_names_in_repo(url, branch):
     pkg_names = []
     user, repo = _get_user_repo(url)
-    api = "https://api.github.com/repos/{}/{}/git/trees/{}?recursive=1".format(user, repo, branch)
 
-    req = requests.get(api, auth=(my_username, my_token))
+    git_api = 'https://api.github.com/repos'
+
+    if branch is None:
+        api_url = git_api + '/{}/{}'.format(user, repo)
+        try:
+            branch = requests.get(api_url, auth=(my_username, my_token)).json()['default_branch']
+        except KeyError as e:
+            print(e)
+            return None, None
+
+    api_url = git_api + '/{}/{}/git/trees/{}?recursive=1'.format(user, repo, branch)
+
+    req = requests.get(api_url, auth=(my_username, my_token))
     pkgs = req.json()['tree']
     for pkg in pkgs:
         if pkg['path'].endswith('package.xml'):
@@ -27,7 +38,7 @@ def get_package_names_in_repo(url, branch):
                 url = "https://github.com/" + user + '/' + repo + '.git'
                 pkg_names.append(child.text)
 
-    return pkg_names
+    return pkg_names, branch
 
 
 def extract_component(repo, pkg, branch, distro, category=''):
@@ -40,6 +51,9 @@ def extract_component(repo, pkg, branch, distro, category=''):
 
 
 if __name__ == '__main__':
-    pkgs = get_package_names_in_repo('https://github.com/ros-planning/moveit', 'master')
+    repo = 'https://github.com/ros-simulation/gazebo_ros_pkgs'
+    branch = 'melodic-devel'
+    distro = 'melodic'
+    pkgs = get_package_names_in_repo(repo, branch)
     for pkg in pkgs:
-        print(pkg)
+        extract_component(repo, pkg, branch, distro, 'simulation/gazebo')
