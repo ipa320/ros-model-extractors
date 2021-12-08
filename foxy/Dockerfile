@@ -2,6 +2,8 @@
 FROM ros:foxy
 ARG enable_ssh
 ARG path_to_scripts
+ARG path_to_ssh_config
+
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 RUN apt-get update && apt upgrade -y && apt-get install -y \
@@ -54,7 +56,7 @@ RUN if [ $enable_ssh ] ; then mkdir -p /home/extractor/.ssh/ && \
     touch /home/extractor/.ssh/config && \
     chmod 600 /home/extractor/.ssh/config ; fi
 
-COPY --chown=extractor:root ssh_config/ /keys/
+COPY --chown=extractor:root ${path_to_ssh_config}ssh_config/ /keys/
 RUN if [ $enable_ssh ] ; then  cat /keys/ssh_key.pub >> /home/extractor/.ssh/authorized_keys ; fi
 RUN if [ $enable_ssh ] ; then  cat /keys/config >> /home/extractor/.ssh/config ; fi
 ####
@@ -77,4 +79,4 @@ COPY ${path_to_scripts}ros_model_extractor.py /
 COPY ${path_to_scripts}test.sh /
 
 EXPOSE 4005
-#CMD sudo chown -R extractor:extractor /home/extractor/results
+CMD sudo chown -R extractor:extractor /home/extractor/results
