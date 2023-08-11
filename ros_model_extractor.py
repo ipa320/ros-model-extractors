@@ -43,8 +43,8 @@ class RosExtractor():
 
     #BONSAI PARSER
     parser = CppAstParser(workspace = ws)
-    parser.set_library_path("/usr/lib/llvm-10/lib")
-    parser.set_standard_includes("/usr/lib/llvm-10/lib/clang/10.0.0/include")
+    parser.set_library_path("/usr/lib/llvm-14/lib")
+    parser.set_standard_includes("/usr/lib/llvm-14/lib/clang/14.0.0/include")
     db_dir = os.path.join(ws, "build")
     if os.path.isfile(os.path.join(db_dir, "compile_commands.json")):
         parser.set_database(db_dir)
@@ -110,6 +110,7 @@ class RosExtractor():
                       RosModel_node=RosModelMetamodel.Node(node_name)
                       try:
                           self.extract_primitives(node, parser, analysis, RosModel_node, roscomponent, pkg_name, node_name, node_name)
+                          print(node,parser,analysis, RosModel_node,ros_component)
                           # SAVE ROS MODEL
                           ros_model = RosModelGenerator()
                           ros_model.create_model_from_node(self.pkg.name,node_name, RosModel_node, self.args.repo, self.pkg_type)
@@ -308,7 +309,7 @@ class RosExtractor():
         if node.language == "cpp":
           for call in (CodeQuery(gs).all_calls.get()):
               if "Publisher" in str(call):
-                #print(call)
+                print("Printing calll========================", call)
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
                   msg_type = analysis._extract_message_type(call)
