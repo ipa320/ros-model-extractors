@@ -1,6 +1,0 @@
-setup.py
-turtlesim/__init__.py
-turtlesim.egg-info/PKG-INFO
-turtlesim.egg-info/SOURCES.txt
-turtlesim.egg-info/dependency_links.txt
-turtlesim.egg-info/top_level.txt
