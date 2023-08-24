@@ -1,0 +1,13 @@
+{
+  "package_name": "turtlesim",
+  "non_idl_tuples": [
+    "/home/divya/Master_Thesis/RosModel_Extractor_fork/ros-model-extractors/ros_tutorials/turtlesim:action/RotateAbsolute.action",
+    "/home/divya/Master_Thesis/RosModel_Extractor_fork/ros-model-extractors/ros_tutorials/turtlesim:msg/Color.msg",
+    "/home/divya/Master_Thesis/RosModel_Extractor_fork/ros-model-extractors/ros_tutorials/turtlesim:msg/Pose.msg",
+    "/home/divya/Master_Thesis/RosModel_Extractor_fork/ros-model-extractors/ros_tutorials/turtlesim:srv/Kill.srv",
+    "/home/divya/Master_Thesis/RosModel_Extractor_fork/ros-model-extractors/ros_tutorials/turtlesim:srv/SetPen.srv",
+    "/home/divya/Master_Thesis/RosModel_Extractor_fork/ros-model-extractors/ros_tutorials/turtlesim:srv/Spawn.srv",
+    "/home/divya/Master_Thesis/RosModel_Extractor_fork/ros-model-extractors/ros_tutorials/turtlesim:srv/TeleportAbsolute.srv",
+    "/home/divya/Master_Thesis/RosModel_Extractor_fork/ros-model-extractors/ros_tutorials/turtlesim:srv/TeleportRelative.srv"
+  ]
+}

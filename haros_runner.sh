@@ -118,5 +118,5 @@ echo "###########"
 done
 
 ## Clean and finish
-rm -rf ${5}/src/*
-rm -rf ${4}/*
+# rm -rf ${5}/src/*
+# rm -rf ${4}/*

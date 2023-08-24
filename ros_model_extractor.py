@@ -62,6 +62,7 @@ class RosExtractor():
       self.pkg.path= self.args.path_to_src
       self.pkg_type="AmentPackage"
     roscomponent = None
+    
     #HAROS NODE EXTRACTOR
 
     srcdir = self.pkg.path[len(ws):]
@@ -110,7 +111,6 @@ class RosExtractor():
                       RosModel_node=RosModelMetamodel.Node(node_name)
                       try:
                           self.extract_primitives(node, parser, analysis, RosModel_node, roscomponent, pkg_name, node_name, node_name)
-                          print(node,parser,analysis, RosModel_node,ros_component)
                           # SAVE ROS MODEL
                           ros_model = RosModelGenerator()
                           ros_model.create_model_from_node(self.pkg.name,node_name, RosModel_node, self.args.repo, self.pkg_type)
