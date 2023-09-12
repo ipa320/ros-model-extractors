@@ -326,8 +326,8 @@ class RosExtractor():
                   if name!="?" or msg_type!="?":
                     RosModel_node.add_subscriber(name, msg_type.replace("/",".").replace(".msg",""))
           for call in (CodeQuery(gs).all_calls.get()):
-              if "Service" in str(call) and "::srv::" in str(call):
-                #print(call)
+              if "Service" in str(call) or "::srv::" in str(call):
+                print(call)
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
                   srv_type = analysis._extract_message_type(call)

@@ -31,7 +31,7 @@ class rosPkgRunner:
         self._gitRepo = gitRepo
         self._pathToSRCcode = None
        
-        self._ROS_model_extractor_plugin_file = "new_ros_model_extractor.py"
+        self._ROS_model_extractor_plugin_file = "rosHumble_model_extractor.py"
              
         self.mkOuputDir()
        

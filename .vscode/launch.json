@@ -21,18 +21,19 @@
             "justMyCode": false,
             "args": [
                 "--package",
-                "turtlesim",
+                "usb_cam",
                 "--name",
-                "turtlesim_node",
+                "--all",
                 "--node",
                 "--model-path",
                 "/home/divya/ros2_ws/runner_op",
                 "--ws",
                 "/home/divya/ros2_ws",
                 "--repo",
-                "https://github.com/ros/ros_tutorials/ -b humble-devel",
+                "https://github.com/ros-drivers/usb_cam.git -b ros2",
                 "--path-to-src",
-                "~/ros2_ws/src/ros_tutorials/turtlesim"
+                //"~/ros2_ws/src/ros_tutorials/turtlesim"
+                "~/ros2_ws/src/usb_cam"
             ]
         }
     ]

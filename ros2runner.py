@@ -94,7 +94,7 @@ class ros2Runner(rosPkgRunner):
                                 ], stdout=subprocess.PIPE, text=True).stdout
             fileHandling.wrtieToFile(extractorFile, extractorContent)
        
-    def extractorRun(self,):
+    def extractorRun(self,clearFlag=False):
        
 
         #1. clone the git repo at the required
@@ -113,6 +113,7 @@ class ros2Runner(rosPkgRunner):
         self.showAllROSmodel()
        
         #6. Clear the ROS ws SRC folder
-        self.cleanUPsrc()        
+        if clearFlag:
+            self.cleanUPsrc()        
        
         print( "------------------Done---------------")

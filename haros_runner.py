@@ -9,7 +9,22 @@ import glob
 
 from ros2runner import ros2Runner
 
-   
+
+# pkgName = 'ur5e_cell'
+# NodeName = '--all'
+# typeOfRequest = 'node'
+# pathToOutput =  "/home/divya/ros2_ws/runner_op"
+# pathToROSws = "/home/divya/ros2_ws"
+# gitRepo = "https://github.com/ipa-cmh/ur5e_cell.git -b start-of-training"\
+
+
+# pkgName = 'turtlesim'
+# NodeName = '--all'
+# typeOfRequest = 'node'
+# pathToOutput =  "/home/divya/ros2_ws/runner_op"
+# pathToROSws = "/home/divya/ros2_ws"
+# gitRepo = "https://github.com/ros/ros_tutorials/ -b humble"
+
 def main():
 
     pkgName = 'turtlesim'
@@ -17,7 +32,7 @@ def main():
     typeOfRequest = 'node'
     pathToOutput =  "/home/divya/ros2_ws/runner_op"
     pathToROSws = "/home/divya/ros2_ws"
-    gitRepo = "https://github.com/ros/ros_tutorials/ -b humble-devel"
+    gitRepo = "https://github.com/ros/ros_tutorials/ -b humble"
 
     # print("pkgName:", pkgName)
     # print("NodeName:", NodeName)
@@ -33,7 +48,8 @@ def main():
                         pathToROSws=pathToROSws,
                         gitRepo=gitRepo,
                         outputDir=pathToOutput)
-    ros2Extractor.extractorRun()
+    ros2Extractor.extractorRun(False)
    
 
-main()
+if __name__ == "__main__":
+    main()
