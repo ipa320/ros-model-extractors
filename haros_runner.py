@@ -27,12 +27,12 @@ from ros2runner import ros2Runner
 
 def main():
 
-    pkgName = 'turtlesim'
+    pkgName = 'joystick_drivers'
     NodeName = '--all'
     typeOfRequest = 'node'
     pathToOutput =  "/home/divya/ros2_ws/runner_op"
     pathToROSws = "/home/divya/ros2_ws"
-    gitRepo = "https://github.com/ros/ros_tutorials/ -b humble"
+    gitRepo = "https://github.com/ros-drivers/joystick_drivers.git -b ros2"
 
     # print("pkgName:", pkgName)
     # print("NodeName:", NodeName)
@@ -48,7 +48,7 @@ def main():
                         pathToROSws=pathToROSws,
                         gitRepo=gitRepo,
                         outputDir=pathToOutput)
-    ros2Extractor.extractorRun(False)
+    ros2Extractor.extractorRun(True)
    
 
 if __name__ == "__main__":
