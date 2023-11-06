@@ -23,6 +23,7 @@ from ros_model_generator.rosmodel_generator import RosModelGenerator
 import ros_metamodels.ros_metamodel_core as RosModelMetamodel
 
 import rospkg
+from copy import deepcopy
 #import ament_index_python 
 from haros.extractor import NodeExtractor, RoscppExtractor, RospyExtractor
 from haros.metamodel import Node, Package, RosName, SourceFile
@@ -69,7 +70,9 @@ class RosExtractor():
     model_str = ""
     if os.path.isfile(os.path.join(self.pkg.path, "CMakeLists.txt")):
         parser.parse(os.path.join(self.pkg.path, "CMakeLists.txt"))
-        for target in parser.executables.values():
+        node_name_dict = deepcopy(parser.executables)
+        node_name_dict.update(deepcopy(parser.libraries))
+        for target in node_name_dict.values():
             print("INFO: Found artifact: "+target.output_name)
             if (self.args.a):
                 node_name = target.output_name

@@ -27,12 +27,12 @@ from ros2runner import ros2Runner
 
 def main():
 
-    pkgName = 'joystick_drivers'
+    pkgName = 'aruco_ros'
     NodeName = '--all'
     typeOfRequest = 'node'
     pathToOutput =  "/home/divya/ros2_ws/runner_op"
     pathToROSws = "/home/divya/ros2_ws"
-    gitRepo = "https://github.com/ros-drivers/joystick_drivers.git -b ros2"
+    gitRepo = "https://github.com/pal-robotics/aruco_ros/ -b humble-devel"
 
     # print("pkgName:", pkgName)
     # print("NodeName:", NodeName)
