@@ -6,42 +6,31 @@ from datetime import datetime
 import shutil
 import glob
 
+from rosHumble_model_extractor_scripts.ros2runner import ros2Runner
 
-from ros2runner import ros2Runner
-
-
-# pkgName = 'ur5e_cell'
-# NodeName = '--all'
-# typeOfRequest = 'node'
-# pathToOutput =  "/home/divya/ros2_ws/runner_op"
-# pathToROSws = "/home/divya/ros2_ws"
-# gitRepo = "https://github.com/ipa-cmh/ur5e_cell.git -b start-of-training"\
-
-
-# pkgName = 'turtlesim'
-# NodeName = '--all'
-# typeOfRequest = 'node'
-# pathToOutput =  "/home/divya/ros2_ws/runner_op"
-# pathToROSws = "/home/divya/ros2_ws"
-# gitRepo = "https://github.com/ros/ros_tutorials/ -b humble"
+# Arguments:
+#   1: Package name or Git repository name
+#   2: Node name or launch file name or '--all' to analyse all the available nodes 
+#   3: Type of the request: either 'launch' or 'node'
+#   4: Path to the folder where the resulting model files should be stored
+#   5: Path to the ROS workspace 
+#   6: Http address links of the Git repositories (to indicate the branch put the name of the repository between quotes and add the suffix -b *banch_name*, for example "https://github.com/ipa320/ros-model-extractors b main"
 
 def main():
 
-    pkgName = 'aruco_ros'
-    NodeName = '--all'
-    typeOfRequest = 'node'
-    pathToOutput =  "/home/divya/ros2_ws/runner_op"
-    pathToROSws = "/home/divya/ros2_ws"
-    gitRepo = "https://github.com/pal-robotics/aruco_ros/ -b humble-devel"
+    CLI_args = sys.argv[1:]
 
-    # print("pkgName:", pkgName)
-    # print("NodeName:", NodeName)
-    # print("typeOfRequest:", typeOfRequest)
-    # print("pathToOutput:", pathToOutput)
-    # print("pathToROSws:", pathToROSws)
-    # print("gitRepo:", gitRepo)
-   
-   
+    if len(CLI_args) < 6:
+        print(f'ERROR: At least 6 arguments expected, only {len(CLI_args)} are given.')
+        sys.exit()
+
+    pkgName = sys.argv[1] 
+    NodeName = sys.argv[2]
+    typeOfRequest = sys.argv[3]
+    pathToOutput =  sys.argv[4] 
+    pathToROSws = sys.argv[5] 
+    gitRepo = sys.argv[6]
+
     ros2Extractor = ros2Runner(inputPkgName=pkgName,
                         inputNodeName=NodeName,
                         typeOfRequest=typeOfRequest,
