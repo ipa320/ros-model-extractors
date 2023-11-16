@@ -313,19 +313,8 @@ class RosExtractor():
         #ROS2
         if node.language == "cpp":
           for call in (CodeQuery(gs).all_calls.get()):
-              print("-------------------")
-            
-              printDict = {"full_name":call.full_name,
-                           "canonical_type": call.canonical_type,
-                            "call_variable": str(call),
-                            "line_no":call.line,
-                            "name":call.name,
-                            "column":call.column,
-                            "file_name": call.file}
-          
               
               if "Publisher" in str(call):
-                print("Printing calll========================", call)
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
                   msg_type = analysis._extract_message_type(call)
@@ -333,8 +322,7 @@ class RosExtractor():
                   if name!="?" or msg_type!="?":
                     RosModel_node.add_publisher(name, msg_type.replace("/",".").replace(".msg",""))
 
-              if "Subscription" in str(call):
-                #print(call)
+              if "Subscriber" in str(call):
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
                   msg_type = analysis._extract_message_type(call)
@@ -343,8 +331,6 @@ class RosExtractor():
                     RosModel_node.add_subscriber(name, msg_type.replace("/",".").replace(".msg",""))
 
               if "Service" in str(call) or "::srv::" in str(call.function):
-                print(call.function.canonical_type)
-                print(printDict)
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
                   srv_type = analysis._extract_message_type(call)

@@ -110,7 +110,7 @@ class rosPkgRunner:
        
     def callHarosPlugin(self,):
        
-        print("Update code to execute harosPlugig command!!")
+        print("Update code to execute harosPlugin command!!")
    
     def mkOuputDir(self,):
        

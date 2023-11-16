@@ -34,7 +34,7 @@ class ros2Runner(rosPkgRunner):
                         outputDir=outputDir)
 
     def runColconBuild(self,):
-        subprocess.run(["colcon", "build", "--cmake-args", "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"])
+        subprocess.run(["colcon", "build", "--cmake-args"])   #CMake Colcon Warning fix
        
     def runColconList(self,):
         os.system('colcon list > /tmp/colcon_list.txt')
