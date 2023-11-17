@@ -86,9 +86,9 @@ then
   then
     if [ "${2}" = "--all" ]
     then
-      python3 /ros_model_extractor.py --package "$1" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo -a >> extractor.log
+      python3 /ros_model_extractor.py --package "$1" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo -a >> ${4}/extractor.log
     else
-      python3 /ros_model_extractor.py --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo>> extractor.log
+      python3 /ros_model_extractor.py --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo>> ${4}/extractor.log
     fi
     #cat extractor.log 
   else
@@ -102,7 +102,7 @@ fi
 
 echo "~~~~~~~~~~~"
 echo "Extraction finished. See the following report:"
-cat extractor.log
+cat ${4}/extractor.log
 echo "~~~~~~~~~~~"
 
 echo "###########"
@@ -118,4 +118,5 @@ echo "###########"
 done
 
 ## Clean and finish
-rm -rf ${5}/src/*
+# rm -rf ${5}/src/*
+# rm -rf ${4}/*
