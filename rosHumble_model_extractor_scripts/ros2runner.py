@@ -4,8 +4,8 @@ import os
 import subprocess
 from datetime import datetime
 import shutil
-from rosHumble_model_extractor_scripts.ros_pkg_runner import rosPkgRunner
-from rosHumble_model_extractor_scripts.file_handling import fileHandling
+from ros_pkg_runner import rosPkgRunner
+from file_handling import fileHandling
 import glob
 
 

@@ -6,7 +6,7 @@ from datetime import datetime
 import shutil
 import glob
 
-from rosHumble_model_extractor_scripts.ros2runner import ros2Runner
+from ros2runner import ros2Runner
 
 # Arguments:
 #   1: Package name or Git repository name
