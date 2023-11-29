@@ -23,6 +23,7 @@ from ros_model_generator.rosmodel_generator import RosModelGenerator
 import ros_metamodels.ros_metamodel_core as RosModelMetamodel
 
 import rospkg
+from copy import deepcopy
 #import ament_index_python 
 from haros.extractor import NodeExtractor, RoscppExtractor, RospyExtractor
 from haros.metamodel import Node, Package, RosName, SourceFile
@@ -43,13 +44,9 @@ class RosExtractor():
 
     #BONSAI PARSER
     parser = CppAstParser(workspace = ws)
-    parser.set_library_path("/usr/lib/llvm-10/lib")
-    parser.set_standard_includes("/usr/lib/llvm-14/lib/clang/10.0.0/include")
-    db_dir = os.path.join(ws, "build")
-    if os.path.isfile(os.path.join(db_dir, "compile_commands.json")):
-        parser.set_database(db_dir)
-    else:
-      print("The compile_commands.json file can't be found")
+    parser.set_library_path("/usr/lib/llvm-14/lib")
+    parser.set_standard_includes("/usr/lib/llvm-14/lib/clang/14.0.0/include")
+    
     if (self.args.node):
         self.extract_node(self.args.name, self.args.name, self.args.package_name, None, ws, None)
   def extract_node(self, name, node_name, pkg_name, ns, ws, rossystem):
@@ -73,7 +70,9 @@ class RosExtractor():
     model_str = ""
     if os.path.isfile(os.path.join(self.pkg.path, "CMakeLists.txt")):
         parser.parse(os.path.join(self.pkg.path, "CMakeLists.txt"))
-        for target in parser.executables.values():
+        node_name_dict = deepcopy(parser.executables)
+        node_name_dict.update(deepcopy(parser.libraries))
+        for target in node_name_dict.values():
             print("INFO: Found artifact: "+target.output_name)
             if (self.args.a):
                 node_name = target.output_name
@@ -98,6 +97,12 @@ class RosExtractor():
             if node.language == "cpp":
               parser = CppAstParser(workspace = ws)
               analysis = RoscppExtractor(self.pkg, ws)
+
+              db_dir = os.path.join(ws, "build")
+              if os.path.isfile(os.path.join(db_dir, "compile_commands.json")):
+                  parser.set_database(db_dir)
+              else:
+                print("The compile_commands.json file can't be found")
             if node.language == "python":
               parser = PyAstParser(workspace = ws)
               analysis = RospyExtractor(self.pkg, ws)
@@ -308,26 +313,24 @@ class RosExtractor():
         #ROS2
         if node.language == "cpp":
           for call in (CodeQuery(gs).all_calls.get()):
+              
               if "Publisher" in str(call):
-                print("Printing calll========================", call)
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
                   msg_type = analysis._extract_message_type(call)
                   queue_size = analysis._extract_queue_size(call, queue_pos=1)
                   if name!="?" or msg_type!="?":
                     RosModel_node.add_publisher(name, msg_type.replace("/",".").replace(".msg",""))
-          for call in (CodeQuery(gs).all_calls.get()):
-              if "Subscription" in str(call):
-                #print(call)
+
+              if "Subscriber" in str(call):
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
                   msg_type = analysis._extract_message_type(call)
                   queue_size = analysis._extract_queue_size(call, queue_pos=1)
                   if name!="?" or msg_type!="?":
                     RosModel_node.add_subscriber(name, msg_type.replace("/",".").replace(".msg",""))
-          for call in (CodeQuery(gs).all_calls.get()):
-              if "Service" in str(call) or "::srv::" in str(call):
-                print(call)
+
+              if "Service" in str(call) or "::srv::" in str(call.function):
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
                   srv_type = analysis._extract_message_type(call)
@@ -335,7 +338,7 @@ class RosExtractor():
                   print(name + " " + srv_type)
                   if name!="?" or srv_type!="?":
                     RosModel_node.add_service_server(name, srv_type.replace("/",".").replace(".srv",""))
-          for call in (CodeQuery(gs).all_calls.get()):
+
               if "Client" in str(call) and "::srv::" in str(call):
                 #print(call)
                 if len(call.arguments) > 1:
@@ -387,6 +390,30 @@ class RosExtractor():
               param_name_, param_type_ = parameter
               if not (param_type_ is None) and not (param_name_ in written_params):
                 RosModel_node.add_parameter(param_name_.replace(".","/"), default_value_ , param_type_, None)
+        elif node.language == "python":
+          msgs_list = []
+          pkgs_list = []
+          for imp_name in parser.imported_names_list:
+              s = str(imp_name)
+              print(imp_name)
+              if "msg" in s or "srv" in s:
+                  ss = s.split(".")
+                  if len(ss) < 2:
+                      continue
+                  if ss[-1] == "msg" or ss[-1] == "srv":
+                      pkgs_list.append(ss[0])
+                  elif ss[1] == "msg" or ss[1] == "srv":
+                      msgs_list.append((ss[0], ss[2]))
+                  else:
+                      log.debug(("Python import with 'msg' or 'srv', "
+                                      "but unable to process it: ")
+                                    + s)
+              for call in (CodeQuery(gs).all_calls.get()):
+                  print(call)
+                  if "create_subscription" in str(call):
+                    print("Found subcription")
+                 
+                  
 
   def parse_arg(self):
       parser = argparse.ArgumentParser()
@@ -406,40 +433,3 @@ class RosExtractor():
       self.args = parser.parse_args()
 
 
-class RosInterface:
-  def __init__(self, name, ref):
-    self.name = name
-    self.ref = ref
-
-class ros_component:
-  def __init__(self, name, ns):
-    self.name = ns+name if ns else name
-    self.ns = ns
-    self.pubs = []
-    self.subs = []
-    self.srvsrvs = []
-    self.srvcls = []
-    self.actsrvs = []
-    self.actcls = []
-  def add_interface(self, name, interface_type, ref):
-    if interface_type == "pubs":
-        self.pubs.append(RosInterface(name,ref))
-    if interface_type == "subs":
-        self.subs.append(RosInterface(name,ref))
-    if interface_type == "srvsrvs":
-        self.srvsrvs.append(RosInterface(name,ref))
-    if interface_type == "srvcls":
-        self.srvcls.append(RosInterface(name,ref))
-    if interface_type == "actsrvs":
-        self.actsrvs.append(RosInterface(name,ref))
-    if interface_type == "actcls":
-        self.actcls.append(RosInterface(name,ref))
-
-def main(argv = None):
-    extractor = RosExtractor()
-    if extractor.launch():
-        return 0
-    return 1
-
-if __name__== "__main__":
-  main()
