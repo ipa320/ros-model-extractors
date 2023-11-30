@@ -1,9 +1,10 @@
 # Use an official Python runtime as a parent image
-FROM osrf/ros:noetic-desktop
+FROM ros:noetic
 ARG enable_ssh
 ARG path_to_scripts
 
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 4B63CF8FDE49746E98FA01DDAD19BAB3CBF125EA
 
 RUN apt-get update && apt upgrade -y && apt-get install -y \
     cppcheck \
