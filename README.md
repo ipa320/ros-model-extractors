@@ -52,6 +52,7 @@ Please check the available examples for the supported distros:
 - [ROS1 melodic](melodic/README.md)
 - [ROS1 noetic](noetic/README.md)
 - [ROS2 foxy](foxy/README.md)
+- [ROS2 humble](humble/README.md)
 
 ToDo:
  - Extractor of interfaces types (msgs, srvs and actions)

@@ -17,7 +17,7 @@ Call the ros-model extractor plugin, remember you have to also clone the reposit
 For example:
 
 ```
-[sudo] docker run -it haros_humble:latest /haros_runner.sh sick_safetyscanners2 sick_safetyscanners2_node node . /home/extractor/ws  https://github.com/SICKAG/sick_safetyscanners2
+[sudo] docker run -it haros_humble:latest /haros_runner.sh aruco_ros --all node . /home/extractor/ws "https://github.com/pal-robotics/aruco_ros"
 
 [sudo] docker run -it haros_humble:latest /haros_runner.sh turtlesim turtlesim_node node . /home/extractor/ws "https://github.com/ros/ros_tutorials -b humble"
 
