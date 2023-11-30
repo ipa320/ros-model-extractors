@@ -23,6 +23,7 @@ from ros_model_generator.rosmodel_generator import RosModelGenerator
 import ros_metamodels.ros_metamodel_core as RosModelMetamodel
 
 import rospkg
+from copy import deepcopy
 #import ament_index_python 
 from haros.extractor import NodeExtractor, RoscppExtractor, RospyExtractor
 from haros.metamodel import Node, Package, RosName, SourceFile
@@ -73,7 +74,9 @@ class RosExtractor():
     model_str = ""
     if os.path.isfile(os.path.join(self.pkg.path, "CMakeLists.txt")):
         parser.parse(os.path.join(self.pkg.path, "CMakeLists.txt"))
-        for target in parser.executables.values():
+        node_name_dict = deepcopy(parser.executables)
+        node_name_dict.update(deepcopy(parser.libraries))
+        for target in node_name_dict.values():
             print("INFO: Found artifact: "+target.output_name)
             if (self.args.a):
                 node_name = target.output_name
@@ -316,8 +319,7 @@ class RosExtractor():
                   queue_size = analysis._extract_queue_size(call, queue_pos=1)
                   if name!="?" or msg_type!="?":
                     RosModel_node.add_publisher(name, msg_type.replace("/",".").replace(".msg",""))
-          for call in (CodeQuery(gs).all_calls.get()):
-              if "Subscription" in str(call):
+              if "Subscription" in str(call):  # Subscription or Subscriber?
                 #print(call)
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
@@ -325,8 +327,7 @@ class RosExtractor():
                   queue_size = analysis._extract_queue_size(call, queue_pos=1)
                   if name!="?" or msg_type!="?":
                     RosModel_node.add_subscriber(name, msg_type.replace("/",".").replace(".msg",""))
-          for call in (CodeQuery(gs).all_calls.get()):
-              if "Service" in str(call) and "::srv::" in str(call):
+              if "Service" in str(call) and "::srv::" in str(call): #or?
                 #print(call)
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
@@ -335,7 +336,6 @@ class RosExtractor():
                   print(name + " " + srv_type)
                   if name!="?" or srv_type!="?":
                     RosModel_node.add_service_server(name, srv_type.replace("/",".").replace(".srv",""))
-          for call in (CodeQuery(gs).all_calls.get()):
               if "Client" in str(call) and "::srv::" in str(call):
                 #print(call)
                 if len(call.arguments) > 1:
