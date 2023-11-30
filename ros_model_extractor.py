@@ -403,6 +403,7 @@ class RosExtractor():
       parser.add_argument('--path-to-src', required=False, dest='path_to_src')
       parser.add_argument('--repo', required=False, dest='repo')
       parser.add_argument('-a', action='store_true')
+      parser.add_argument('--clang-version', required=True, dest='clang_version')
       self.args = parser.parse_args()
 
 
