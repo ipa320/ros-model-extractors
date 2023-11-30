@@ -40,11 +40,12 @@ class RosExtractor():
   def launch(self):
     self.parse_arg()
     ws = self.args.worspace_path
-
+    clang_version= self.args.clang_version
+    
     #BONSAI PARSER
     parser = CppAstParser(workspace = ws)
-    parser.set_library_path("/usr/lib/llvm-10/lib")
-    parser.set_standard_includes("/usr/lib/llvm-10/lib/clang/10.0.0/include")
+    parser.set_library_path("/usr/lib/llvm-"+clang_version+"/lib")
+    parser.set_standard_includes("/usr/lib/llvm-"+clang_version+"/lib/clang/"+clang_version+".0.0/include")
     db_dir = os.path.join(ws, "build")
     if os.path.isfile(os.path.join(db_dir, "compile_commands.json")):
         parser.set_database(db_dir)
@@ -402,6 +403,7 @@ class RosExtractor():
       parser.add_argument('--path-to-src', required=False, dest='path_to_src')
       parser.add_argument('--repo', required=False, dest='repo')
       parser.add_argument('-a', action='store_true')
+      parser.add_argument('--clang-version', required=True, dest='clang_version')
       self.args = parser.parse_args()
 
 

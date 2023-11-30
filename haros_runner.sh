@@ -61,6 +61,16 @@ else
   echo "ROS installation not found"
 fi
 
+if [ -n $ROS_DISTRO ]
+then
+  if [[ $ROS_DISTRO == "humble" ]]
+  then
+    clang_version=14
+  else
+    clang_version=10
+  fi
+fi
+
 echo ""
 
 #tree ${5}
@@ -77,18 +87,18 @@ then
   then
     if [ "${2}" = "--all" ]
     then
-      python /ros_model_extractor.py --package "$1" --"${3}" --model-path "${4}" --ws "${5}" --repo $model_repo -a>> extractor.log
+      python /ros_model_extractor.py --clang-version $clang_version --package "$1" --"${3}" --model-path "${4}" --ws "${5}" --repo $model_repo -a>> extractor.log
     else
-      python /ros_model_extractor.py --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --repo $model_repo>> extractor.log
+      python /ros_model_extractor.py --clang-version $clang_version --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --repo $model_repo>> extractor.log
     fi
     #cat extractor.log
   elif [[ $PYTHON_VERSION == "3" ]]
   then
     if [ "${2}" = "--all" ]
     then
-      python3 /ros_model_extractor.py --package "$1" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo -a >> extractor.log
+      python3 /ros_model_extractor.py --clang-version $clang_version --package "$1" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo -a >> extractor.log
     else
-      python3 /ros_model_extractor.py --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo>> extractor.log
+      python3 /ros_model_extractor.py --clang-version $clang_version --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo>> extractor.log
     fi
     #cat extractor.log 
   else
