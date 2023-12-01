@@ -44,7 +44,7 @@ then
   then
     source install/setup.bash
     rosdep install -y -i -r --from-path src
-    colcon build --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    colcon build --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=1 --no-warn-unused-cli
     source ${5}/install/setup.bash
     colcon list > /tmp/colcon_list.txt
     path_to_src_code=$(cat /tmp/colcon_list.txt |  grep "^$1" | awk '{ print $2}')
@@ -91,7 +91,6 @@ then
     else
       python /ros_model_extractor.py --clang-version $clang_version --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --repo $model_repo>> ${4}/extractor.log
     fi
-    #cat extractor.log
   elif [[ $PYTHON_VERSION == "3" ]]
   then
     if [ "${2}" = "--all" ]
@@ -100,7 +99,6 @@ then
     else
       python3 /ros_model_extractor.py --clang-version $clang_version --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo>> ${4}/extractor.log
     fi
-    #cat extractor.log 
   else
     echo "Python version not supported"
     exit
@@ -114,6 +112,12 @@ echo "~~~~~~~~~~~"
 echo "Extraction finished. See the following report:"
 cat ${4}/extractor.log
 echo "~~~~~~~~~~~"
+
+
+#echo "~~~~~~~~~~~"
+#echo "Compile commands file:"
+#cat ${5}/build/compile_commands.json
+#echo "~~~~~~~~~~~"
 
 echo "###########"
 for generated_model in "${4}"/*.ros

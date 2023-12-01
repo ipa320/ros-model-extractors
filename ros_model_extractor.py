@@ -312,6 +312,7 @@ class RosExtractor():
         if node.language == "cpp":
           for call in (CodeQuery(gs).all_calls.get()):
               if "Publisher" in str(call):
+                #print("####### Publisher Call:")
                 #print(call)
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
@@ -319,7 +320,8 @@ class RosExtractor():
                   queue_size = analysis._extract_queue_size(call, queue_pos=1)
                   if name!="?" or msg_type!="?":
                     RosModel_node.add_publisher(name, msg_type.replace("/",".").replace(".msg",""))
-              if "Subscription" in str(call):  # Subscription or Subscriber?
+              if "Subscription" in str(call):
+                #print("####### Subscriber Call:")
                 #print(call)
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
@@ -327,7 +329,8 @@ class RosExtractor():
                   queue_size = analysis._extract_queue_size(call, queue_pos=1)
                   if name!="?" or msg_type!="?":
                     RosModel_node.add_subscriber(name, msg_type.replace("/",".").replace(".msg",""))
-              if "Service" in str(call) and "::srv::" in str(call): #or?
+              if ("Service" in str(call) and "::srv::" in str(call)) or ("rclcpp::Service" in str(call)):
+                #print("####### Service Call:")
                 #print(call)
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
@@ -336,7 +339,8 @@ class RosExtractor():
                   print(name + " " + srv_type)
                   if name!="?" or srv_type!="?":
                     RosModel_node.add_service_server(name, srv_type.replace("/",".").replace(".srv",""))
-              if "Client" in str(call) and "::srv::" in str(call):
+              if ("Client" in str(call) and "::srv::" in str(call)) or ("rclcpp::Client" in str(call)):
+                #print("####### Client Call:")
                 #print(call)
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
@@ -345,14 +349,18 @@ class RosExtractor():
                   print(name + " " + srv_type)
                   if name!="?" or srv_type!="?":
                     RosModel_node.add_service_client(name, srv_type.replace("/",".").replace(".srv",""))
-              if "Client" in str(call) and "::action::" in str(call):
+              if "Client" in str(call) and ("::action::" in str(call) or "rclcpp_action" in str(call)):
+                #print("####### Action Client Call:")
+                #print(call)
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
                   act_type = analysis._extract_message_type(call)
                   queue_size = analysis._extract_queue_size(call, queue_pos=1)
                   if name!="?" or act_type!="?":
                     RosModel_node.add_action_client(name, act_type.replace("/",".").replace(".action",""))
-              if "Server" in str(call) and "::action::" in str(call):
+              if "Server" in str(call) and ("::action::" in str(call) or "rclcpp_action" in str(call)):
+                #print("####### Action Server Call:")
+                #print(call)
                 if len(call.arguments) > 1:
                   name = analysis._extract_topic(call, topic_pos=0)
                   act_type = analysis._extract_message_type(call)

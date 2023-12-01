@@ -64,7 +64,7 @@ USER extractor
 ENV CMAKE_CXX_COMPILER /usr/lib/llvm-14/bin/clang++
 RUN source /opt/ros/$ROS_DISTRO/setup.bash;\
  cd /home/extractor/ws;\
- colcon build --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ;\
+ colcon build --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=1 --no-warn-unused-cli ;\
  source /home/extractor/ws/install/setup.bash; \
  haros init
 
