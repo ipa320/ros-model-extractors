@@ -21,7 +21,13 @@ For example:
 
 [sudo] docker run -it haros_humble:latest /haros_runner.sh turtlesim turtlesim_node node . /home/extractor/ws "https://github.com/ros/ros_tutorials -b humble"
 
-[sudo] docker run -it haros_humble:latest /haros_runner.sh test_pkg test_node node . /home/extractor/ws "https://github.com/ipa-nhg/test_ros2_code_extractor -b ros2Parameters"
+[sudo] docker run -it haros_humble:latest /haros_runner.sh test_pkg test_node node . /home/extractor/ws "https://github.com/ipa-nhg/test_ros2_code_extractor -b ros2"
+
+[sudo] docker run -it haros_humble:latest /haros_runner.sh depthai_ros_driver --all node . /home/extractor/ws "https://github.com/luxonis/depthai-ros/" https://github.com/ros-perception/vision_msgs "https://github.com/ros-perception/image_common/ -b humble"
+
+docker run -it haros_humble:latest /haros_runner.sh nav2_controller --all node . /home/extractor/ws  https://github.com/ros-planning/navigation2 "https://github.com/ros-geographic-info/geographic_info/ -b ros2 "
+
+docker run -it haros_humble:latest /haros_runner.sh examples_rclcpp_minimal_publisher --all node . /home/extractor/ws   https://github.com/ros2/examples/
 
 ```
 
