@@ -95,6 +95,7 @@ then
   then
     if [ "${2}" = "--all" ]
     then
+      python3 /call_generator.py
       python3 /ros_model_extractor.py --clang-version $clang_version --package "$1" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo -a >> ${4}/extractor.log
     else
       python3 /ros_model_extractor.py --clang-version $clang_version --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo>> ${4}/extractor.log
@@ -120,7 +121,7 @@ echo "~~~~~~~~~~~"
 #echo "~~~~~~~~~~~"
 
 echo "###########"
-for generated_model in "${4}"/*.ros
+for generated_model in "${4}"/*.ros2
 do
 echo "~~~~~~~~~~~"
 echo "Print of the model: $generated_model:"
@@ -132,4 +133,4 @@ echo "###########"
 done
 
 ## Clean and finish
-rm -rf ${5}/src/*
+#rm -rf ${5}/src/*

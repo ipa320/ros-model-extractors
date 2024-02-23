@@ -25,7 +25,7 @@ ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib/llvm-14/lib
 RUN pip3 install --upgrade pip
 RUN pip3 install -Iv clang==14.0
 RUN pip3 install -e git+https://github.com/timtadh/pyflwor.git#egg=pyflwor
-RUN pip3 install -e git+https://github.com/ipa320/ros_model_parser.git#egg=ros_model_parser
+RUN pip3 install -e git+https://github.com/ipa320/ros2model.git#egg=ros2model
 RUN pip3 install -e git+https://github.com/git-afsantos/bonsai#egg=bonsai-code
 RUN pip3 install -e git+https://github.com/ipa-nhg/haros@FixPythonExtractTopic#egg=haros
 # RUN pip3 install -e git+https://github.com/git-afsantos/haros#egg=haros
@@ -41,6 +41,9 @@ RUN usermod -a -G root extractor
 RUN echo "extractor ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/extractor
 USER extractor
 RUN mkdir -p /home/extractor/ws/src
+#RUN git clone https://github.com/ipa320/ros2model.git /home/extractor/ws/src/ros2model
+RUN echo "test"
+RUN git clone https://github.com/ipa-nhg/ros2model.git -b PythonInstallTemplatesFolder /home/extractor/ws/src/ros2model
 
 RUN mkdir -p /home/extractor/results
 RUN chown extractor:extractor /home/extractor/results
@@ -71,11 +74,13 @@ RUN source /opt/ros/$ROS_DISTRO/setup.bash;\
 ENV PYTHON_VERSION 3
 RUN echo 'source /home/extractor/ws/install/setup.bash' >> /home/extractor/.bashrc 
 
-#RUN echo "test"
+RUN echo "test"
 COPY ${path_to_scripts}messages_generator_runner.sh /
 COPY ${path_to_scripts}generate_messages_model_helper.sh /
 COPY ${path_to_scripts}haros_runner.sh /
 COPY ${path_to_scripts}ros_model_extractor.py /
+COPY ${path_to_scripts}call_generator.py /
+
 COPY ${path_to_scripts}test.sh /
 
 EXPOSE 4005
