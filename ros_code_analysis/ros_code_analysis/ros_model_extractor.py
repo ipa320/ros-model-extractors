@@ -30,11 +30,14 @@ from haros.metamodel import Node, Package, RosName, SourceFile
 from haros.launch_parser import LaunchParser, LaunchParserError, NodeTag
 from haros.cmake_parser import RosCMakeParser
 from bonsai.analysis import CodeQuery, resolve_expression
+from ros2_cpp_extractor import Ros2CppExtractor
+from ros1_cpp_extractor import Ros1CppExtractor
+
 
 try:
-    from bonsai.cpp.clang_parser import CppAstParser
+  from bonsai.cpp.clang_parser import CppAstParser
 except ImportError:
-    CppAstParser = None
+  CppAstParser = None
 from bonsai.py.py_parser import PyAstParser
 
 class RosExtractor():
@@ -64,11 +67,12 @@ class RosExtractor():
       self.pkg.path= self.args.path_to_src
       self.pkg_type="AmentPackage"
     roscomponent = None
-    #HAROS NODE EXTRACTOR
 
+    #HAROS NODE EXTRACTOR
     srcdir = self.pkg.path[len(ws):]
     srcdir = os.path.join(ws, srcdir.split(os.sep, 1)[0])
     bindir = os.path.join(ws, "build")
+
     #HAROS CMAKE PARSER
     parser = RosCMakeParser(srcdir, bindir, pkgs = [self.pkg])
     model_str = ""
@@ -104,7 +108,6 @@ class RosExtractor():
             if node.language == "python":
               parser = PyAstParser(workspace = ws)
               analysis = RospyExtractor(self.pkg, ws)
-          #node.source_tree = parser.global_scope
             for sf in node.source_files:
               try:
                 if parser.parse(sf.path) is not None:
@@ -113,16 +116,36 @@ class RosExtractor():
                       node_name=node_name.replace(".py","")
                   graph_name = RosModelMetamodel.GraphName(name=node_name, namespace="", full_name=node_name)
                   try:
-                    publishers = self.extract_primitives(node, parser, analysis, roscomponent, pkg_name, node_name, node_name)
-                    #, subscribers, serviceservers, serviceclients, actionservers, actionclients, parameters = self.extract_primitives(node, parser, analysis, roscomponent, pkg_name, node_name, node_name)
+                    if os.environ.get("ROS_VERSION") == "1":
+                      if (node.language=="cpp"):
+                        [publishers, subscribers, 
+                        serviceservers, serviceclients, 
+                        actionservers, actionclients, 
+                        parameters] = Ros1CppExtractor.extract_primitives(node, parser, analysis)
+                      elif (node.language=="python"):
+                        print("ROS1 python")
+                    elif os.environ.get("ROS_VERSION") == "2":
+                      if (node.language=="cpp"):
+                        [publishers, subscribers, 
+                        serviceservers, serviceclients, 
+                        actionservers, actionclients, 
+                        parameters] = Ros2CppExtractor.extract_primitives(node, parser, analysis)
+                      elif (node.language=="python"):
+                        print("ROS2 python")
                     RosModel_node=RosModelMetamodel.Node(name=graph_name,
-                            publisher=publishers)
+                            publisher=publishers, subscriber=subscribers,
+                            serviceserver=serviceservers, serviceclient=serviceclients,
+                            actionserver=actionservers, actionclient=actionclients,
+                            parameter=parameters
+                            )
                   except error:
                     print("Interfaces not found")
                     print(error)
                     RosModel_node=RosModelMetamodel.Node(name=graph_name)
                   RosModel_artifact=RosModelMetamodel.Artifact(name=node_name, node=[RosModel_node])
                   RosModel_package=RosModelMetamodel.Package(name=self.args.package_name, artifact=[RosModel_artifact])
+                  print(RosModel_package)
+                  #Model file generator
                   node_generator = ComponentGenerator()
                   node_generator.generate_a_file(
                     model=RosModel_package,
@@ -137,51 +160,6 @@ class RosExtractor():
                 rossystem.add_component(roscomponent)
     if self.args.output:
         print(model_str)
-
-  def transform_type(self, param_type):
-    if os.environ.get("ROS_VERSION") == "2":
-      param_type=str(param_type)
-      param_type=param_type[param_type.find("[")+1:param_type.find("]")]
-    if param_type == 'double':
-        return 'Double'
-    elif param_type == 'bool':
-        return 'Boolean'
-    elif param_type == 'int' or param_type == 'long':
-        return 'Integer'
-    elif (param_type == 'str' or 'basic_string<char>' in param_type or param_type == 'std::string'):
-        return 'String'
-    #elif param_type == 'yaml':
-        #return 'Struct'
-    #elif 'std::vector' in param_type:
-        #return 'List'
-    else:
-      return None
-
-
-  def extract_primitives(self, node, parser, analysis, roscomponent, pkg_name, node_name, art_name):
-    gs = parser.global_scope
-    node.source_tree = parser.global_scope
-    publishers=[]
-    subscribers=[]
-    erviceservers=[]
-    serviceclients=[]
-    actionservers=[]
-    actionclients=[]
-    parameters=[]
-    if os.environ.get("ROS_VERSION") == "2":
-        #ROS2
-        if node.language == "cpp":
-          for call in (CodeQuery(gs).all_calls.get()):
-              if "Publisher" in str(call):
-                if len(call.arguments) > 1:
-                  name = analysis._extract_topic(call, topic_pos=0)
-                  msg_type = analysis._extract_message_type(call)
-                  queue_size = analysis._extract_queue_size(call, queue_pos=1)
-                  if name!="?" or msg_type!="?":
-                    pub = RosModelMetamodel.Publisher(name=name,type=msg_type.replace("/",".").replace(".msg",""))
-                    publishers.append(pub)
-    return publishers#, subscribers, serviceservers, serviceclients, actionservers, actionclients, parameters
-
 
   def parse_arg(self):
       parser = argparse.ArgumentParser()
@@ -200,36 +178,6 @@ class RosExtractor():
       parser.add_argument('-a', action='store_true')
       parser.add_argument('--clang-version', required=True, dest='clang_version')
       self.args = parser.parse_args()
-
-
-class RosInterface:
-  def __init__(self, name, ref):
-    self.name = name
-    self.ref = ref
-
-class ros_component:
-  def __init__(self, name, ns):
-    self.name = ns+name if ns else name
-    self.ns = ns
-    self.pubs = []
-    self.subs = []
-    self.srvsrvs = []
-    self.srvcls = []
-    self.actsrvs = []
-    self.actcls = []
-  def add_interface(self, name, interface_type, ref):
-    if interface_type == "pubs":
-        self.pubs.append(RosInterface(name,ref))
-    if interface_type == "subs":
-        self.subs.append(RosInterface(name,ref))
-    if interface_type == "srvsrvs":
-        self.srvsrvs.append(RosInterface(name,ref))
-    if interface_type == "srvcls":
-        self.srvcls.append(RosInterface(name,ref))
-    if interface_type == "actsrvs":
-        self.actsrvs.append(RosInterface(name,ref))
-    if interface_type == "actcls":
-        self.actcls.append(RosInterface(name,ref))
 
 def main(argv = None):
     extractor = RosExtractor()

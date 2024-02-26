@@ -95,10 +95,9 @@ then
   then
     if [ "${2}" = "--all" ]
     then
-      python3 /call_generator.py
-      python3 /ros_model_extractor.py --clang-version $clang_version --package "$1" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo -a >> ${4}/extractor.log
+      python3 /ros_code_analysis/ros_model_extractor.py --clang-version $clang_version --package "$1" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo -a >> ${4}/extractor.log
     else
-      python3 /ros_model_extractor.py --clang-version $clang_version --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo>> ${4}/extractor.log
+      python3 /ros_code_analysis/ros_model_extractor.py --clang-version $clang_version --package "$1" --name "$2" --"${3}" --model-path "${4}" --ws "${5}" --path-to-src "$path_to_src_code" --repo $model_repo>> ${4}/extractor.log
     fi
   else
     echo "Python version not supported"
