@@ -1,19 +1,18 @@
 # Use an official Python runtime as a parent image
-FROM ros:noetic
+FROM ros:humble
 ARG enable_ssh
 ARG path_to_scripts
-
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 4B63CF8FDE49746E98FA01DDAD19BAB3CBF125EA
 
 RUN apt-get update && apt upgrade -y && apt-get install -y \
     cppcheck \
     cccc \
-    clang-10 \
+    clang-14 \
     git \
-    libclang-10-dev \
+    libclang-14-dev \
     python3-pip \
-    llvm-10-dev \
+    llvm-14-dev \
     wget \
     netbase \
     libmagic-dev \
@@ -21,17 +20,17 @@ RUN apt-get update && apt upgrade -y && apt-get install -y \
 
 RUN if [ $enable_ssh ] ; then apt-get install -y openssh-server ; fi
 
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib/llvm-10/lib
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib/llvm-14/lib
 
 RUN pip3 install --upgrade pip
-RUN pip3 install -Iv clang==10.0.1
+RUN pip3 install -Iv clang==14.0
 RUN pip3 install -e git+https://github.com/timtadh/pyflwor.git#egg=pyflwor
-RUN pip3 install -e git+https://github.com/ipa320/ros_model_parser.git#egg=ros_model_parser
+RUN pip3 install -e git+https://github.com/ipa320/ros2model.git#egg=ros2model
 RUN pip3 install -e git+https://github.com/git-afsantos/bonsai#egg=bonsai-code
 RUN pip3 install -e git+https://github.com/ipa-nhg/haros@FixPythonExtractTopic#egg=haros
 # RUN pip3 install -e git+https://github.com/git-afsantos/haros#egg=haros
 
-RUN apt-get update && apt-get install -y ros-noetic-desktop && apt upgrade -y
+RUN apt-get update && apt-get install -y ros-humble-desktop && apt upgrade -y
 
 SHELL ["bash", "-c"]
 
@@ -42,6 +41,8 @@ RUN usermod -a -G root extractor
 RUN echo "extractor ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/extractor
 USER extractor
 RUN mkdir -p /home/extractor/ws/src
+#RUN git clone https://github.com/ipa320/ros2model.git /home/extractor/ws/src/ros2model
+RUN git clone https://github.com/ipa-nhg/ros2model.git -b PythonInstallTemplatesFolder /home/extractor/ws/src/ros2model
 
 RUN mkdir -p /home/extractor/results
 RUN chown extractor:extractor /home/extractor/results
@@ -56,30 +57,29 @@ RUN if [ $enable_ssh ] ; then mkdir -p /home/extractor/.ssh/ && \
     touch /home/extractor/.ssh/config && \
     chmod 600 /home/extractor/.ssh/config ; fi
 
-COPY --chown=extractor:root ssh_config/ /keys/
+COPY --chown=extractor:root docker/ssh_config/ /keys/
 RUN if [ $enable_ssh ] ; then  cat /keys/ssh_key.pub >> /home/extractor/.ssh/authorized_keys ; fi
 RUN if [ $enable_ssh ] ; then  cat /keys/config >> /home/extractor/.ssh/config ; fi
 ####
 USER extractor
 
-ENV CMAKE_CXX_COMPILER /usr/lib/llvm-10/bin/clang++
+ENV CMAKE_CXX_COMPILER /usr/lib/llvm-14/bin/clang++
 RUN source /opt/ros/$ROS_DISTRO/setup.bash;\
- cd /home/extractor/ws/src;\
- rosdep update;\
- catkin_init_workspace;\
  cd /home/extractor/ws;\
- catkin_make -DCMAKE_EXPORT_COMPILE_COMMANDS=1;\
- source /home/extractor/ws/devel/setup.bash; \
+ colcon build --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=1 --no-warn-unused-cli ;\
+ source /home/extractor/ws/install/setup.bash; \
  haros init
 
 ENV PYTHON_VERSION 3
-RUN echo 'source /home/extractor/ws/devel/setup.bash' >> /home/extractor/.bashrc 
+RUN echo 'source /home/extractor/ws/install/setup.bash' >> /home/extractor/.bashrc 
 
-COPY ${path_to_scripts}messages_generator_runner.sh /
-COPY ${path_to_scripts}generate_messages_model_helper.sh /
-COPY ${path_to_scripts}haros_runner.sh /
-COPY ${path_to_scripts}ros_model_extractor.py /
-COPY ${path_to_scripts}test.sh /
+RUN echo "test"
+#COPY ${path_to_scripts}messages_generator_runner.sh /
+#COPY ${path_to_scripts}generate_messages_model_helper.sh /
+COPY docker/haros_runner.sh /
+COPY ros_code_analysis /
 
-EXPOSE 4004
+COPY helper_scripts/test.sh /
+
+EXPOSE 4005
 #CMD sudo chown -R extractor:extractor /home/extractor/results
