@@ -132,4 +132,4 @@ echo "###########"
 done
 
 ## Clean and finish
-#rm -rf ${5}/src/*
+#find ${5}/src -maxdepth 1 -type d ! -iname ros2model -exec rm -rvf {} \;

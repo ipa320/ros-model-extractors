@@ -41,8 +41,7 @@ RUN usermod -a -G root extractor
 RUN echo "extractor ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/extractor
 USER extractor
 RUN mkdir -p /home/extractor/ws/src
-#RUN git clone https://github.com/ipa320/ros2model.git /home/extractor/ws/src/ros2model
-RUN git clone https://github.com/ipa-nhg/ros2model.git -b PythonInstallTemplatesFolder /home/extractor/ws/src/ros2model
+RUN git clone https://github.com/ipa320/ros2model.git /home/extractor/ws/src/ros2model
 
 RUN mkdir -p /home/extractor/results
 RUN chown extractor:extractor /home/extractor/results
@@ -73,7 +72,7 @@ RUN source /opt/ros/$ROS_DISTRO/setup.bash;\
 ENV PYTHON_VERSION 3
 RUN echo 'source /home/extractor/ws/install/setup.bash' >> /home/extractor/.bashrc 
 
-RUN echo "test"
+#RUN echo "test"
 #COPY ${path_to_scripts}messages_generator_runner.sh /
 #COPY ${path_to_scripts}generate_messages_model_helper.sh /
 COPY docker/haros_runner.sh /
