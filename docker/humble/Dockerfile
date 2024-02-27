@@ -41,8 +41,7 @@ RUN usermod -a -G root extractor
 RUN echo "extractor ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/extractor
 USER extractor
 RUN mkdir -p /home/extractor/ws/src
-#RUN git clone https://github.com/ipa320/ros2model.git /home/extractor/ws/src/ros2model
-RUN git clone https://github.com/ipa-nhg/ros2model.git -b PythonInstallTemplatesFolder /home/extractor/ws/src/ros2model
+RUN git clone https://github.com/ipa320/ros2model.git /home/extractor/ws/src/ros2model
 
 RUN mkdir -p /home/extractor/results
 RUN chown extractor:extractor /home/extractor/results
