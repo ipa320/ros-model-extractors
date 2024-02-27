@@ -73,7 +73,7 @@ RUN source /opt/ros/$ROS_DISTRO/setup.bash;\
 ENV PYTHON_VERSION 3
 RUN echo 'source /home/extractor/ws/install/setup.bash' >> /home/extractor/.bashrc 
 
-RUN echo "test"
+#RUN echo "test"
 #COPY ${path_to_scripts}messages_generator_runner.sh /
 #COPY ${path_to_scripts}generate_messages_model_helper.sh /
 COPY docker/haros_runner.sh /

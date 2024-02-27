@@ -32,6 +32,7 @@ from haros.cmake_parser import RosCMakeParser
 from bonsai.analysis import CodeQuery, resolve_expression
 from ros2_cpp_extractor import Ros2CppExtractor
 from ros1_cpp_extractor import Ros1CppExtractor
+from ros1_python_extractor import Ros1PythonExtractor
 
 
 try:
@@ -123,7 +124,10 @@ class RosExtractor():
                         actionservers, actionclients, 
                         parameters] = Ros1CppExtractor.extract_primitives(node, parser, analysis)
                       elif (node.language=="python"):
-                        print("ROS1 python")
+                        [publishers, subscribers, 
+                        serviceservers, serviceclients, 
+                        actionservers, actionclients, 
+                        parameters] = Ros1PythonExtractor.extract_primitives(node, parser, analysis)
                     elif os.environ.get("ROS_VERSION") == "2":
                       if (node.language=="cpp"):
                         [publishers, subscribers, 
@@ -131,7 +135,7 @@ class RosExtractor():
                         actionservers, actionclients, 
                         parameters] = Ros2CppExtractor.extract_primitives(node, parser, analysis)
                       elif (node.language=="python"):
-                        print("ROS2 python")
+                        print("ROS2 python...tbd...")
                     RosModel_node=RosModelMetamodel.Node(name=graph_name,
                             publisher=publishers, subscriber=subscribers,
                             serviceserver=serviceservers, serviceclient=serviceclients,
@@ -144,7 +148,6 @@ class RosExtractor():
                     RosModel_node=RosModelMetamodel.Node(name=graph_name)
                   RosModel_artifact=RosModelMetamodel.Artifact(name=node_name, node=[RosModel_node])
                   RosModel_package=RosModelMetamodel.Package(name=self.args.package_name, artifact=[RosModel_artifact])
-                  print(RosModel_package)
                   #Model file generator
                   node_generator = ComponentGenerator()
                   node_generator.generate_a_file(
