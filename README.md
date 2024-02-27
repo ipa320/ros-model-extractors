@@ -6,6 +6,9 @@
 [![NOETIC ros-model-extractors](https://github.com/ipa320/ros-model-extractors/actions/workflows/build_noetic.yml/badge.svg)](https://github.com/ipa320/ros-model-extractors/actions/workflows/build_noetic.yml)
 [![FOXY build status](https://github.com/ipa320/ros-model-extractors/actions/workflows/build_foxy.yml/badge.svg)](https://github.com/ipa320/ros-model-extractors/actions/workflows/build_foxy.yml)
 
+:bangbang::bangbang::bangbang: This branch is only working for ROS1 and it generates models for the old version of the [RosTooling](https://github.com/ipa320/RosTooling/tree/master)
+
+It depends on the branch ros1 of the [ros2model](https://github.com/ipa320/ros2model/tree/ros1) repository.
 
 Technical Maintainer: [**ipa-nhg**](https://github.com/ipa-nhg/) (**Nadia Hammoudeh Garcia**, **Fraunhofer IPA**) - **nadia.hammoudeh.garcia@ipa.fraunhofer.de**
 
