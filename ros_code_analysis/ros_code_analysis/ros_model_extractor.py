@@ -147,7 +147,7 @@ class RosExtractor():
                     print(error)
                     RosModel_node=RosModelMetamodel.Node(name=graph_name)
                   RosModel_artifact=RosModelMetamodel.Artifact(name=node_name, node=[RosModel_node])
-                  RosModel_package=RosModelMetamodel.Package(name=self.args.package_name, artifact=[RosModel_artifact])
+                  RosModel_package=RosModelMetamodel.Package(name=self.args.package_name, artifact=[RosModel_artifact],fromGitRepo=str(self.args.repo))
                   #Model file generator
                   node_generator = ComponentGenerator()
                   node_generator.generate_a_file(
